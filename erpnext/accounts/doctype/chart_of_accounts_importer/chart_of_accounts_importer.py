@@ -22,9 +22,16 @@ def validate_company(company):
 		'allow_account_creation_against_child_company'])
 
 	if parent_company and (not allow_account_creation_against_child_company):
+<<<<<<< HEAD
 		frappe.throw(_("""{0} is a child company. Please import accounts against parent company
 			or enable {1} in company master""").format(frappe.bold(company),
 			frappe.bold('Allow Account Creation Against Child Company')), title='Wrong Company')
+=======
+		msg = _("{} is a child company. ").format(frappe.bold(company))
+		msg += _("Please import accounts against parent company or enable {} in company master.").format(
+			frappe.bold('Allow Account Creation Against Child Company'))
+		frappe.throw(msg, title=_('Wrong Company'))
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	if frappe.db.get_all('GL Entry', {"company": company}, "name", limit=1):
 		return False
@@ -74,7 +81,13 @@ def generate_data_from_csv(file_doc, as_dict=False):
 			if as_dict:
 				data.append({frappe.scrub(header): row[index] for index, header in enumerate(headers)})
 			else:
+<<<<<<< HEAD
 				if not row[1]: row[1] = row[0]
+=======
+				if not row[1]:
+					row[1] = row[0]
+					row[3] = row[2]
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 				data.append(row)
 
 	# convert csv data
@@ -96,7 +109,13 @@ def generate_data_from_excel(file_doc, extension, as_dict=False):
 		if as_dict:
 			data.append({frappe.scrub(header): row[index] for index, header in enumerate(headers)})
 		else:
+<<<<<<< HEAD
 			if not row[1]: row[1] = row[0]
+=======
+			if not row[1]:
+					row[1] = row[0]
+					row[3] = row[2]
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			data.append(row)
 
 	return data
@@ -147,33 +166,52 @@ def build_forest(data):
 		from frappe import _
 
 		for row in data:
-			account_name, parent_account = row[0:2]
+			account_name, parent_account, account_number, parent_account_number = row[0:4]
+			if account_number:
+				account_name = "{} - {}".format(account_number, account_name)
+			if parent_account_number:
+				parent_account_number = cstr(parent_account_number).strip()
+				parent_account = "{} - {}".format(parent_account_number, parent_account)
+
 			if parent_account == account_name == child:
 				return [parent_account]
 			elif account_name == child:
 				parent_account_list = return_parent(data, parent_account)
+<<<<<<< HEAD
 				if not parent_account_list:
 					frappe.throw(_("The parent account {0} does not exists in the uploaded template").format(
 						frappe.bold(parent_account)))
 
+=======
+				if not parent_account_list and parent_account:
+					frappe.throw(_("The parent account {0} does not exists in the uploaded template").format(
+						frappe.bold(parent_account)))
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 				return [child] + parent_account_list
 
 	charts_map, paths = {}, []
 
-	line_no = 3
+	line_no = 2
 	error_messages = []
 
 	for i in data:
+<<<<<<< HEAD
 		account_name, dummy, account_number, is_group, account_type, root_type = i
+=======
+		account_name, parent_account, account_number, parent_account_number, is_group, account_type, root_type = i
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 		if not account_name:
 			error_messages.append("Row {0}: Please enter Account Name".format(line_no))
+
+		if account_number:
+			account_number = cstr(account_number).strip()
+			account_name = "{} - {}".format(account_number, account_name)
 
 		charts_map[account_name] = {}
 		if cint(is_group) == 1: charts_map[account_name]["is_group"] = is_group
 		if account_type: charts_map[account_name]["account_type"] = account_type
 		if root_type: charts_map[account_name]["root_type"] = root_type
-		if account_number: charts_map[account_name]["account_number"] = account_number
 		path = return_parent(data, account_name)[::-1]
 		paths.append(path) # List of path is created
 		line_no += 1
@@ -196,7 +234,11 @@ def build_response_as_excel(writer):
 	reader = csv.reader(f)
 
 	from frappe.utils.xlsxutils import make_xlsx
+<<<<<<< HEAD
 	xlsx_file = make_xlsx(reader, "Chart Of Accounts Importer Template")
+=======
+	xlsx_file = make_xlsx(reader, "Chart of Accounts Importer Template")
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	f.close()
 	os.remove(filename)
@@ -209,6 +251,7 @@ def build_response_as_excel(writer):
 @frappe.whitelist()
 def download_template(file_type, template_type):
 	data = frappe._dict(frappe.local.form_dict)
+<<<<<<< HEAD
 
 	writer = get_template(template_type)
 
@@ -266,6 +309,65 @@ def get_sample_template(writer):
 
 	return writer
 
+=======
+
+	writer = get_template(template_type)
+
+	if file_type == 'CSV':
+		# download csv file
+		frappe.response['result'] = cstr(writer.getvalue())
+		frappe.response['type'] = 'csv'
+		frappe.response['doctype'] = 'Chart of Accounts Importer'
+	else:
+		build_response_as_excel(writer)
+
+def get_template(template_type):
+
+	fields = ["Account Name", "Parent Account", "Account Number", "Parent Account Number", "Is Group", "Account Type", "Root Type"]
+	writer = UnicodeWriter()
+	writer.writerow(fields)
+
+	if template_type == 'Blank Template':
+		for root_type in  get_root_types():
+			writer.writerow(['', '', '', 1, '', root_type])
+
+		for account in get_mandatory_group_accounts():
+			writer.writerow(['', '', '', 1, account, "Asset"])
+
+		for account_type in get_mandatory_account_types():
+			writer.writerow(['', '', '', 0, account_type.get('account_type'), account_type.get('root_type')])
+	else:
+		writer = get_sample_template(writer)
+
+	return writer
+
+def get_sample_template(writer):
+	template = [
+		["Application Of Funds(Assets)", "", "", "", 1, "", "Asset"],
+		["Sources Of Funds(Liabilities)", "", "", "", 1, "", "Liability"],
+		["Equity", "", "", "", 1, "", "Equity"],
+		["Expenses", "", "", "", 1, "", "Expense"],
+		["Income", "", "", "", 1, "", "Income"],
+		["Bank Accounts", "Application Of Funds(Assets)", "", "", 1, "Bank", "Asset"],
+		["Cash In Hand", "Application Of Funds(Assets)", "", "", 1, "Cash", "Asset"],
+		["Stock Assets", "Application Of Funds(Assets)", "", "", 1, "Stock", "Asset"],
+		["Cost Of Goods Sold", "Expenses", "", "", 0, "Cost of Goods Sold", "Expense"],
+		["Asset Depreciation", "Expenses", "", "", 0, "Depreciation", "Expense"],
+		["Fixed Assets", "Application Of Funds(Assets)", "", "", 0, "Fixed Asset", "Asset"],
+		["Accounts Payable", "Sources Of Funds(Liabilities)", "", "", 0, "Payable", "Liability"],
+		["Accounts Receivable", "Application Of Funds(Assets)", "", "", 1, "Receivable", "Asset"],
+		["Stock Expenses", "Expenses", "", "", 0, "Stock Adjustment", "Expense"],
+		["Sample Bank", "Bank Accounts", "", "", 0, "Bank", "Asset"],
+		["Cash", "Cash In Hand", "", "", 0, "Cash", "Asset"],
+		["Stores", "Stock Assets", "", "", 0, "Stock", "Asset"],
+	]
+
+	for row in template:
+		writer.writerow(row)
+
+	return writer
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 @frappe.whitelist()
 def validate_accounts(file_name):
@@ -341,7 +443,8 @@ def validate_account_types(accounts):
 		return _("Please identify/create Account (Ledger) for type - {0}").format(' , '.join(missing))
 
 	account_types_for_group = ["Bank", "Cash", "Stock"]
-	account_groups = [accounts[d]["account_type"] for d in accounts if accounts[d]['is_group'] not in ('', 1)]
+	# fix logic bug
+	account_groups = [accounts[d]["account_type"] for d in accounts if accounts[d]['is_group'] == 1]
 
 	missing = list(set(account_types_for_group) - set(account_groups))
 	if missing:

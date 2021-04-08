@@ -18,7 +18,11 @@
   }
  ],
  "links": [],
+<<<<<<< HEAD
  "modified": "2020-05-20 12:37:17.431879",
+=======
+ "modified": "2020-05-20 12:22:01.866472",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "CRM",
  "name": "Sales Stage",
@@ -41,4 +45,8 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "track_changes": 1
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

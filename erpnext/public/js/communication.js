@@ -84,7 +84,11 @@ frappe.ui.form.on("Communication", {
 						frm.reload_doc();
 						frappe.show_alert({
 							message: __("Opportunity {0} created",
+<<<<<<< HEAD
 								['<a href="#Form/Opportunity/'+r.message+'">' + r.message + '</a>']),
+=======
+								['<a href="/app/opportunity/'+r.message+'">' + r.message + '</a>']),
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 							indicator: 'green'
 						});
 					}

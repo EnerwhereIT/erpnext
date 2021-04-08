@@ -5,7 +5,6 @@
 
 from __future__ import unicode_literals
 import frappe
-from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cint
 from frappe.custom.doctype.property_setter.property_setter import make_property_setter
@@ -13,13 +12,13 @@ from frappe.custom.doctype.property_setter.property_setter import make_property_
 class HRSettings(Document):
 	def validate(self):
 		self.set_naming_series()
-		self.validate_password_policy()
 
 	def set_naming_series(self):
 		from erpnext.setup.doctype.naming_series.naming_series import set_by_naming_series
 		set_by_naming_series("Employee", "employee_number",
 			self.get("emp_created_by")=="Naming Series", hide_name_field=True)
 
+<<<<<<< HEAD
 	def validate_password_policy(self):
 		if self.email_salary_slip_to_employee and self.encrypt_salary_slips_in_emails:
 			if not self.password_policy:
@@ -33,3 +32,5 @@ class HRSettings(Document):
 		self.disable_rounded_total = cint(self.disable_rounded_total)
 		make_property_setter("Salary Slip", "rounded_total", "hidden", self.disable_rounded_total, "Check")
 		make_property_setter("Salary Slip", "rounded_total", "print_hide", self.disable_rounded_total, "Check")
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

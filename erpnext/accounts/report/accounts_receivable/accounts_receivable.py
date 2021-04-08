@@ -161,7 +161,11 @@ class ReceivablePayableReport(object):
 				# advance / unlinked payment or other adjustment
 				row.paid -= gle_balance
 		if gle.cost_center:
+<<<<<<< HEAD
 			row.cost_center =  gle.cost_center
+=======
+			row.cost_center =  str(gle.cost_center)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	def update_sub_total_row(self, row, party):
 		total_row = self.total_row_map.get(party)
@@ -364,7 +368,11 @@ class ReceivablePayableReport(object):
 		payment_terms_details = frappe.db.sql("""
 			select
 				si.name, si.party_account_currency, si.currency, si.conversion_rate,
+<<<<<<< HEAD
 				ps.due_date, ps.payment_amount, ps.description, ps.paid_amount
+=======
+				ps.due_date, ps.payment_amount, ps.description, ps.paid_amount, ps.discounted_amount
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			from `tab{0}` si, `tabPayment Schedule` ps
 			where
 				si.name = ps.parent and
@@ -395,6 +403,7 @@ class ReceivablePayableReport(object):
 			"invoiced": invoiced,
 			"invoice_grand_total": row.invoiced,
 			"payment_term": d.description,
+<<<<<<< HEAD
 			"paid": d.paid_amount,
 			"credit_note": 0.0,
 			"outstanding": invoiced - d.paid_amount
@@ -402,6 +411,15 @@ class ReceivablePayableReport(object):
 
 		if d.paid_amount:
 			row['paid'] -= d.paid_amount
+=======
+			"paid": d.paid_amount + d.discounted_amount,
+			"credit_note": 0.0,
+			"outstanding": invoiced - d.paid_amount - d.discounted_amount
+		}))
+
+		if d.paid_amount:
+			row['paid'] -= d.paid_amount + d.discounted_amount
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	def allocate_closing_to_term(self, row, term, key):
 		if row[key]:
@@ -550,7 +568,7 @@ class ReceivablePayableReport(object):
 			self.filters.range1, self.filters.range2, self.filters.range3, self.filters.range4 = 30, 60, 90, 120
 
 		for i, days in enumerate([self.filters.range1, self.filters.range2, self.filters.range3, self.filters.range4]):
-			if row.age <= days:
+			if cint(row.age) <= cint(days):
 				index = i
 				break
 

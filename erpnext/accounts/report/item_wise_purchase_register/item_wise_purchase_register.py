@@ -15,7 +15,10 @@ def execute(filters=None):
 
 def _execute(filters=None, additional_table_columns=None, additional_query_columns=None):
 	if not filters: filters = {}
+<<<<<<< HEAD
 	filters.update({"from_date": filters.get("date_range")[0], "to_date": filters.get("date_range")[1]})
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	columns = get_columns(additional_table_columns, filters)
 
 	company_currency = erpnext.get_company_currency(filters.company)
@@ -50,7 +53,12 @@ def _execute(filters=None, additional_table_columns=None, additional_query_colum
 		elif d.po_detail:
 			purchase_receipt = ", ".join(po_pr_map.get(d.po_detail, []))
 
+<<<<<<< HEAD
 		expense_account = d.expense_account or aii_account_map.get(d.company)
+=======
+		expense_account = d.unrealized_profit_loss_account or d.expense_account \
+			or aii_account_map.get(d.company)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 		row = {
 			'item_code': d.item_code,
@@ -271,6 +279,7 @@ def get_columns(additional_table_columns, filters):
 			'fieldtype': 'Currency',
 			'options': 'currency',
 			'width': 100
+<<<<<<< HEAD
 		},
 		{
 			'fieldname': 'currency',
@@ -278,6 +287,8 @@ def get_columns(additional_table_columns, filters):
 			'fieldtype': 'Currency',
 			'width': 80,
 			'hidden': 1
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		}
 	]
 
@@ -323,6 +334,10 @@ def get_items(filters, additional_query_columns):
 			`tabPurchase Invoice Item`.`name`, `tabPurchase Invoice Item`.`parent`,
 			`tabPurchase Invoice`.posting_date, `tabPurchase Invoice`.credit_to, `tabPurchase Invoice`.company,
 			`tabPurchase Invoice`.supplier, `tabPurchase Invoice`.remarks, `tabPurchase Invoice`.base_net_total,
+<<<<<<< HEAD
+=======
+			`tabPurchase Invoice`.unrealized_profit_loss_account,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			`tabPurchase Invoice Item`.`item_code`, `tabPurchase Invoice Item`.description,
 			`tabPurchase Invoice Item`.`item_name`, `tabPurchase Invoice Item`.`item_group`,
 			`tabPurchase Invoice Item`.`project`, `tabPurchase Invoice Item`.`purchase_order`,

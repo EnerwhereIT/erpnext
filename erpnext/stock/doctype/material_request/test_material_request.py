@@ -12,9 +12,6 @@ from erpnext.stock.doctype.material_request.material_request \
 from erpnext.stock.doctype.item.test_item import create_item
 
 class TestMaterialRequest(unittest.TestCase):
-	def setUp(self):
-		erpnext.set_perpetual_inventory(0)
-
 	def test_make_purchase_order(self):
 		mr = frappe.copy_doc(test_records[0]).insert()
 
@@ -542,6 +539,7 @@ class TestMaterialRequest(unittest.TestCase):
 		requested_qty = self._get_requested_qty('_Test FG Item', '_Test Warehouse - _TC')
 
 		self.assertEqual(requested_qty, existing_requested_qty + 120)
+<<<<<<< HEAD
 
 		work_order = raise_work_orders(mr.name)
 		wo = frappe.get_doc("Work Order", work_order[0])
@@ -549,6 +547,15 @@ class TestMaterialRequest(unittest.TestCase):
 		wo.wip_warehouse = "_Test Warehouse 1 - _TC"
 		wo.submit()
 
+=======
+
+		work_order = raise_work_orders(mr.name)
+		wo = frappe.get_doc("Work Order", work_order[0])
+		wo.qty = 50
+		wo.wip_warehouse = "_Test Warehouse 1 - _TC"
+		wo.submit()
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		requested_qty = self._get_requested_qty('_Test FG Item', '_Test Warehouse - _TC')
 		self.assertEqual(requested_qty, existing_requested_qty + 70)
 

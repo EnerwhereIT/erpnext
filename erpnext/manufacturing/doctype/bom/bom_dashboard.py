@@ -23,5 +23,11 @@ def get_data():
 				'label': _('Subcontract'),
 				'items': ['Purchase Order', 'Purchase Receipt', 'Purchase Invoice']
 			}
+<<<<<<< HEAD
 		]
+=======
+		],
+		'disable_create_buttons': ["Item", "Purchase Order", "Purchase Receipt",
+			"Purchase Invoice", "Job Card", "Stock Entry", "BOM"]
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	}

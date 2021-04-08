@@ -1,5 +1,9 @@
 {
  "actions": [],
+<<<<<<< HEAD
+=======
+ "allow_auto_repeat": 1,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "allow_import": 1,
  "autoname": "naming_series:",
  "creation": "2013-05-21 16:16:45",
@@ -13,9 +17,16 @@
   "supplier",
   "supplier_name",
   "column_break1",
+<<<<<<< HEAD
   "transaction_date",
   "amended_from",
   "company",
+=======
+  "company",
+  "transaction_date",
+  "valid_till",
+  "amended_from",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "address_section",
   "supplier_address",
   "contact_person",
@@ -33,7 +44,10 @@
   "ignore_pricing_rule",
   "items_section",
   "items",
+<<<<<<< HEAD
   "link_to_mrs",
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "pricing_rule_details",
   "pricing_rules",
   "section_break_22",
@@ -158,6 +172,10 @@
    "default": "Today",
    "fieldname": "transaction_date",
    "fieldtype": "Date",
+<<<<<<< HEAD
+=======
+   "in_list_view": 1,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "label": "Date",
    "oldfieldname": "transaction_date",
    "oldfieldtype": "Date",
@@ -320,12 +338,15 @@
    "reqd": 1
   },
   {
+<<<<<<< HEAD
    "depends_on": "eval:doc.docstatus===0 && (doc.items && doc.items.length)",
    "fieldname": "link_to_mrs",
    "fieldtype": "Button",
    "label": "Link to material requests"
   },
   {
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "fieldname": "pricing_rule_details",
    "fieldtype": "Section Break",
    "label": "Pricing Rules"
@@ -592,6 +613,10 @@
    "fieldname": "base_in_words",
    "fieldtype": "Data",
    "label": "In Words (Company Currency)",
+<<<<<<< HEAD
+=======
+   "length": 240,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "oldfieldname": "in_words",
    "oldfieldtype": "Data",
    "print_hide": 1,
@@ -641,6 +666,10 @@
    "fieldname": "in_words",
    "fieldtype": "Data",
    "label": "In Words",
+<<<<<<< HEAD
+=======
+   "length": 240,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "oldfieldname": "in_words_import",
    "oldfieldtype": "Data",
    "print_hide": 1,
@@ -760,7 +789,11 @@
    "no_copy": 1,
    "oldfieldname": "status",
    "oldfieldtype": "Select",
+<<<<<<< HEAD
    "options": "\nDraft\nSubmitted\nStopped\nCancelled",
+=======
+   "options": "\nDraft\nSubmitted\nStopped\nCancelled\nExpired",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "print_hide": 1,
    "read_only": 1,
    "reqd": 1,
@@ -791,13 +824,29 @@
    "options": "Opportunity",
    "print_hide": 1,
    "read_only": 1
+<<<<<<< HEAD
+=======
+  },
+  {
+   "fieldname": "valid_till",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Valid Till"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 29,
+<<<<<<< HEAD
  "is_submittable": 1,
  "links": [],
  "modified": "2019-12-30 19:17:28.208693",
+=======
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2020-12-03 15:18:29.073368",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier Quotation",

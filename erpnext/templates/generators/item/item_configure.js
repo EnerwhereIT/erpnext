@@ -186,12 +186,21 @@ class ItemConfigure {
 		this.dialog.$status_area.empty();
 	}
 
+<<<<<<< HEAD
 	get_html_for_item_found({ filtered_items_count, filtered_items, exact_match, product_info, allow_items_not_in_stock }) {
 		const exact_match_message = __('1 exact match.');
 		const one_item = exact_match.length === 1 ?
 			exact_match[0] :
 			filtered_items_count === 1 ?
 				filtered_items[0] : '';
+=======
+	get_html_for_item_found({ filtered_items_count, filtered_items, exact_match, product_info }) {
+		const one_item = exact_match.length === 1
+			? exact_match[0]
+			: filtered_items_count === 1
+				? filtered_items[0]
+				: '';
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 		// Allow Add to Cart if adding out of stock items enabled in Shopping Cart else check stock.
 		const in_stock = allow_items_not_in_stock ? 1 : product_info && product_info.in_stock;
@@ -199,6 +208,7 @@ class ItemConfigure {
 		const product_action =  in_stock ? add_to_cart : `<a style="color:#74808b;">${__('Not in Stock')}</a>`;
 
 		const item_add_to_cart = one_item ? `
+<<<<<<< HEAD
 			<div class="alert alert-success d-flex justify-content-between align-items-center" role="alert">
 				<div>
 					<div>${one_item} ${product_info && product_info.price ? '(' + product_info.price.formatted_price_sales_uom + ')' : ''}</div>
@@ -206,26 +216,50 @@ class ItemConfigure {
 				${product_action}
 			</div>
 		`: '';
+=======
+			<button data-item-code="${one_item}"
+				class="btn btn-primary btn-add-to-cart w-100"
+				data-action="btn_add_to_cart"
+			>
+				<span class="mr-2">
+					${frappe.utils.icon('assets', 'md')}
+				</span>
+				${__("Add to Cart")}s
+			</button>
+		` : '';
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 		const items_found = filtered_items_count === 1 ?
 			__('{0} item found.', [filtered_items_count]) :
 			__('{0} items found.', [filtered_items_count]);
 
-		const item_found_status = `
-			<div class="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
-				<span>
-					${exact_match.length === 1 ? '' : items_found}
-					${exact_match.length === 1 ? `<span>${exact_match_message}</span>` : ''}
-				</span>
-				<a href data-action="btn_clear_values">
-					${__('Clear values')}
+		/* eslint-disable indent */
+		const item_found_status = exact_match.length === 1
+			? `<div class="alert alert-success d-flex justify-content-between align-items-center" role="alert">
+				<div><div>
+					${one_item}
+					${product_info && product_info.price
+						? '(' + product_info.price.formatted_price_sales_uom + ')'
+						: ''
+					}
+				</div></div>
+				<a href data-action="btn_clear_values" data-item-code="${one_item}">
+					${__('Clear Values')}
 				</a>
-			</div>
-		`;
+			</div>`
+			: `<div class="alert alert-warning d-flex justify-content-between align-items-center" role="alert">
+					<span>
+						${items_found}
+					</span>
+					<a href data-action="btn_clear_values">
+						${__('Clear values')}
+					</a>
+			</div>`;
+		/* eslint-disable indent */
 
 		return `
-			${item_add_to_cart}
 			${item_found_status}
+			${item_add_to_cart}
 		`;
 	}
 
@@ -257,8 +291,8 @@ class ItemConfigure {
 	}
 
 	append_status_area() {
-		this.dialog.$status_area = $('<div class="status-area">');
-		this.dialog.$wrapper.find('.modal-body').prepend(this.dialog.$status_area);
+		this.dialog.$status_area = $('<div class="status-area mt-5">');
+		this.dialog.$wrapper.find('.modal-body').append(this.dialog.$status_area);
 		this.dialog.$wrapper.on('click', '[data-action]', (e) => {
 			e.preventDefault();
 			const $target = $(e.currentTarget);
@@ -266,7 +300,7 @@ class ItemConfigure {
 			const method = this[action];
 			method.call(this, e);
 		});
-		this.dialog.$body.css({ maxHeight: '75vh', overflow: 'auto', overflowX: 'hidden' });
+		this.dialog.$wrapper.addClass('item-configurator-dialog');
 	}
 
 	get_next_attribute_and_values(selected_attributes) {

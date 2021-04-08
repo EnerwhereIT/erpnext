@@ -44,11 +44,19 @@
   }
  ],
  "links": [],
+<<<<<<< HEAD
  "modified": "2020-01-31 12:21:45.975488",
  "modified_by": "Administrator",
  "module": "Healthcare",
  "name": "Practitioner Schedule",
  "owner": "rmehta@gmail.com",
+=======
+ "modified": "2020-09-18 17:26:09.703215",
+ "modified_by": "Administrator",
+ "module": "Healthcare",
+ "name": "Practitioner Schedule",
+ "owner": "Administrator",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "permissions": [
   {
    "create": 1,

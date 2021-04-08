@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
  "allow_copy": 0,
  "allow_guest_to_view": 0,
  "allow_import": 1,
@@ -12,6 +13,35 @@
  "doctype": "DocType",
  "document_type": "Document",
  "editable_grid": 0,
+=======
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "HR-OFF-.YYYY.-.#####",
+ "creation": "2015-03-04 14:20:17.662207",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "engine": "InnoDB",
+ "field_order": [
+  "job_applicant",
+  "applicant_name",
+  "applicant_email",
+  "column_break_3",
+  "status",
+  "offer_date",
+  "designation",
+  "company",
+  "section_break_4",
+  "offer_terms",
+  "section_break_14",
+  "select_terms",
+  "terms",
+  "printing_details",
+  "letter_head",
+  "column_break_16",
+  "select_print_heading",
+  "amended_from"
+ ],
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "fields": [
   {
    "fieldname": "job_applicant",
@@ -126,6 +156,7 @@
    "width": "50%"
   },
   {
+<<<<<<< HEAD
    "allow_bulk_edit": 0,
    "allow_in_quick_entry": 0,
    "allow_on_submit": 1,
@@ -189,6 +220,24 @@
    "set_only_once": 0,
    "translatable": 0,
    "unique": 0
+=======
+   "allow_on_submit": 1,
+   "fieldname": "select_print_heading",
+   "fieldtype": "Link",
+   "label": "Print Heading",
+   "options": "Print Heading",
+   "print_hide": 1,
+   "report_hide": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Job Offer",
+   "print_hide": 1,
+   "read_only": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   }
  ],
  "is_submittable": 1,
@@ -206,19 +255,27 @@
    "delete": 1,
    "email": 1,
    "export": 1,
+<<<<<<< HEAD
    "if_owner": 0,
    "import": 1,
    "permlevel": 0,
+=======
+   "import": 1,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "HR User",
+<<<<<<< HEAD
    "set_user_permissions": 0,
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "share": 1,
    "submit": 1,
    "write": 1
   }
  ],
+<<<<<<< HEAD
  "quick_entry": 0,
  "read_only": 0,
  "read_only_onload": 0,
@@ -229,4 +286,10 @@
  "track_changes": 0,
  "track_seen": 0,
  "track_views": 0
+=======
+ "show_name_in_global_search": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "applicant_name"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 }

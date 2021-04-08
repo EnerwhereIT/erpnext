@@ -26,7 +26,10 @@
   "supplier_group",
   "supplier_type",
   "pan",
+<<<<<<< HEAD
   "language",
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "allow_purchase_invoice_creation_without_purchase_order",
   "allow_purchase_invoice_creation_without_purchase_receipt",
   "disabled",
@@ -57,6 +60,10 @@
   "website",
   "supplier_details",
   "column_break_30",
+<<<<<<< HEAD
+=======
+  "language",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "is_frozen"
  ],
  "fields": [
@@ -135,8 +142,12 @@
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "label": "Represents Company",
+<<<<<<< HEAD
    "options": "Company",
    "unique": 1
+=======
+   "options": "Company"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "fieldname": "image",
@@ -385,7 +396,11 @@
  "idx": 370,
  "image_field": "image",
  "links": [],
+<<<<<<< HEAD
  "modified": "2020-06-17 23:28:30",
+=======
+ "modified": "2021-01-06 19:51:40.939087",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Buying",
  "name": "Supplier",

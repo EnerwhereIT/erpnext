@@ -1,4 +1,8 @@
 {
+<<<<<<< HEAD
+=======
+ "actions": [],
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "autoname": "ACC-GLE-.YYYY.-.#####",
  "creation": "2013-01-10 16:34:06",
  "doctype": "DocType",
@@ -30,7 +34,12 @@
   "company",
   "finance_book",
   "to_rename",
+<<<<<<< HEAD
   "due_date"
+=======
+  "due_date",
+  "is_cancelled"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  ],
  "fields": [
   {
@@ -245,12 +254,25 @@
    "fieldname": "due_date",
    "fieldtype": "Date",
    "label": "Due Date"
+<<<<<<< HEAD
+=======
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Is Cancelled"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   }
  ],
  "icon": "fa fa-list",
  "idx": 1,
  "in_create": 1,
+<<<<<<< HEAD
  "modified": "2020-03-28 16:22:33.766994",
+=======
+ "modified": "2020-04-07 16:22:33.766994",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "GL Entry",

@@ -35,8 +35,6 @@ class TestPaymentEntry(unittest.TestCase):
 
 		pe.cancel()
 
-		self.assertFalse(self.get_gle(pe.name))
-
 		so_advance_paid = frappe.db.get_value("Sales Order", so.name, "advance_paid")
 		self.assertEqual(so_advance_paid, 0)
 
@@ -124,7 +122,6 @@ class TestPaymentEntry(unittest.TestCase):
 		self.assertEqual(outstanding_amount, 0)
 
 		pe.cancel()
-		self.assertFalse(self.get_gle(pe.name))
 
 		outstanding_amount = flt(frappe.db.get_value("Sales Invoice", si.name, "outstanding_amount"))
 		self.assertEqual(outstanding_amount, 100)
@@ -149,6 +146,31 @@ class TestPaymentEntry(unittest.TestCase):
 		outstanding_amount = flt(frappe.db.get_value("Sales Invoice", pi.name, "outstanding_amount"))
 		self.assertEqual(outstanding_amount, 0)
 
+<<<<<<< HEAD
+=======
+
+	def test_payment_against_sales_invoice_to_check_status(self):
+		si = create_sales_invoice(customer="_Test Customer USD", debit_to="_Test Receivable USD - _TC",
+			currency="USD", conversion_rate=50)
+
+		pe = get_payment_entry("Sales Invoice", si.name, bank_account="_Test Bank USD - _TC")
+		pe.reference_no = "1"
+		pe.reference_date = "2016-01-01"
+		pe.target_exchange_rate = 50
+		pe.insert()
+		pe.submit()
+
+		outstanding_amount, status = frappe.db.get_value("Sales Invoice", si.name, ["outstanding_amount", "status"])
+		self.assertEqual(flt(outstanding_amount), 0)
+		self.assertEqual(status, 'Paid')
+
+		pe.cancel()
+
+		outstanding_amount, status = frappe.db.get_value("Sales Invoice", si.name, ["outstanding_amount", "status"])
+		self.assertEqual(flt(outstanding_amount), 100)
+		self.assertEqual(status, 'Unpaid')
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def test_payment_entry_against_payment_terms(self):
 		si = create_sales_invoice(do_not_save=1, qty=1, rate=200)
 		create_payment_terms_template()
@@ -174,6 +196,7 @@ class TestPaymentEntry(unittest.TestCase):
 		self.assertEqual(si.payment_schedule[0].paid_amount, 200.0)
 		self.assertEqual(si.payment_schedule[1].paid_amount, 36.0)
 
+<<<<<<< HEAD
 	def test_payment_against_sales_invoice_to_check_status(self):
 		si = create_sales_invoice(customer="_Test Customer USD", debit_to="_Test Receivable USD - _TC",
 			currency="USD", conversion_rate=50)
@@ -194,6 +217,36 @@ class TestPaymentEntry(unittest.TestCase):
 		outstanding_amount, status = frappe.db.get_value("Sales Invoice", si.name, ["outstanding_amount", "status"])
 		self.assertEqual(flt(outstanding_amount), 100)
 		self.assertEqual(status, 'Unpaid')
+=======
+	def test_payment_entry_against_payment_terms_with_discount(self):
+		si = create_sales_invoice(do_not_save=1, qty=1, rate=200)
+		create_payment_terms_template_with_discount()
+		si.payment_terms_template = 'Test Discount Template'
+
+		frappe.db.set_value('Company', si.company, 'default_discount_account', 'Write Off - _TC')
+
+		si.append('taxes', {
+			"charge_type": "On Net Total",
+			"account_head": "_Test Account Service Tax - _TC",
+			"cost_center": "_Test Cost Center - _TC",
+			"description": "Service Tax",
+			"rate": 18
+		})
+		si.save()
+
+		si.submit()
+
+		pe = get_payment_entry("Sales Invoice", si.name, bank_account="_Test Cash - _TC")
+		pe.submit()
+		si.load_from_db()
+
+		self.assertEqual(pe.references[0].payment_term, '30 Credit Days with 10% Discount')
+		self.assertEqual(si.payment_schedule[0].payment_amount, 236.0)
+		self.assertEqual(si.payment_schedule[0].paid_amount, 212.40)
+		self.assertEqual(si.payment_schedule[0].outstanding, 0)
+		self.assertEqual(si.payment_schedule[0].discounted_amount, 23.6)
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	def test_payment_against_purchase_invoice_to_check_status(self):
 		pi = make_purchase_invoice(supplier="_Test Supplier USD", debit_to="_Test Payable USD - _TC",
@@ -379,7 +432,6 @@ class TestPaymentEntry(unittest.TestCase):
 		self.assertEqual(outstanding_amount, 0)
 
 		pe3.cancel()
-		self.assertFalse(self.get_gle(pe3.name))
 
 		outstanding_amount = flt(frappe.db.get_value("Sales Invoice", si1.name, "outstanding_amount"))
 		self.assertEqual(outstanding_amount, -100)
@@ -593,6 +645,29 @@ def create_payment_terms_template():
 			}]
 		}).insert()
 
+<<<<<<< HEAD
+=======
+def create_payment_terms_template_with_discount():
+
+	create_payment_term('30 Credit Days with 10% Discount')
+
+	if not frappe.db.exists('Payment Terms Template', 'Test Discount Template'):
+		payment_term_template = frappe.get_doc({
+			'doctype': 'Payment Terms Template',
+			'template_name': 'Test Discount Template',
+			'allocate_payment_based_on_payment_terms': 1,
+			'terms': [{
+				'doctype': 'Payment Terms Template Detail',
+				'payment_term': '30 Credit Days with 10% Discount',
+				'invoice_portion': 100,
+				'credit_days_based_on': 'Day(s) after invoice date',
+				'credit_days': 2,
+				'discount': 10,
+				'discount_validity_based_on': 'Day(s) after invoice date',
+				'discount_validity': 1
+			}]
+		}).insert()
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 def create_payment_term(name):
 	if not frappe.db.exists('Payment Term', name):

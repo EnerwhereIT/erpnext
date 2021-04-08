@@ -19,6 +19,10 @@
   "column_break2",
   "from_date",
   "to_date",
+<<<<<<< HEAD
+=======
+  "sales_order_status",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "sales_orders_detail",
   "get_sales_orders",
   "sales_orders",
@@ -31,6 +35,10 @@
   "material_request_planning",
   "include_non_stock_items",
   "include_subcontracted_items",
+<<<<<<< HEAD
+=======
+  "include_safety_stock",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "ignore_existing_ordered_qty",
   "column_break_25",
   "for_warehouse",
@@ -43,6 +51,10 @@
   "total_produced_qty",
   "column_break_32",
   "status",
+<<<<<<< HEAD
+=======
+  "warehouses",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "amended_from"
  ],
  "fields": [
@@ -219,12 +231,16 @@
    "fieldtype": "Column Break"
   },
   {
+<<<<<<< HEAD
    "fieldname": "for_warehouse",
    "fieldtype": "Link",
    "label": "For Warehouse",
    "options": "Warehouse"
   },
   {
+=======
+   "depends_on": "eval:!doc.__islocal",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "fieldname": "download_materials_required",
    "fieldtype": "Button",
    "label": "Download Required Materials"
@@ -279,7 +295,11 @@
    "fieldtype": "Select",
    "label": "Status",
    "no_copy": 1,
+<<<<<<< HEAD
    "options": "\nDraft\nSubmitted\nNot Started\nIn Process\nCompleted\nStopped\nCancelled\nMaterial Requested",
+=======
+   "options": "\nDraft\nSubmitted\nNot Started\nIn Process\nCompleted\nClosed\nCancelled\nMaterial Requested",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "print_hide": 1,
    "read_only": 1
   },
@@ -291,12 +311,49 @@
    "options": "Production Plan",
    "print_hide": 1,
    "read_only": 1
+<<<<<<< HEAD
   }
  ],
  "icon": "fa fa-calendar",
  "is_submittable": 1,
  "links": [],
  "modified": "2019-12-04 15:58:50.940460",
+=======
+  },
+  {
+   "fieldname": "for_warehouse",
+   "fieldtype": "Link",
+   "label": "Material Request Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "warehouses",
+   "fieldtype": "Table MultiSelect",
+   "hidden": 1,
+   "label": "Warehouses",
+   "options": "Production Plan Material Request Warehouse",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.get_items_from == \"Sales Order\"",
+   "fieldname": "sales_order_status",
+   "fieldtype": "Select",
+   "label": "Sales Order Status",
+   "options": "\nTo Deliver and Bill\nTo Bill\nTo Deliver"
+  },
+  {
+   "default": "0",
+   "fieldname": "include_safety_stock",
+   "fieldtype": "Check",
+   "label": "Include Safety Stock in Required Qty Calculation"
+  }
+ ],
+ "icon": "fa fa-calendar",
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2021-03-08 11:17:25.470147",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Manufacturing",
  "name": "Production Plan",

@@ -6,6 +6,7 @@ import unittest, frappe
 from frappe.utils import flt, nowdate
 from erpnext.accounts.doctype.account.test_account import get_inventory_account
 from erpnext.exceptions import InvalidAccountCurrency
+from erpnext.accounts.doctype.journal_entry.journal_entry import StockAccountInvalidTransaction
 
 class TestJournalEntry(unittest.TestCase):
 	def test_journal_entry_with_against_jv(self):
@@ -74,27 +75,46 @@ class TestJournalEntry(unittest.TestCase):
 
 		elif test_voucher.doctype in ["Sales Order", "Purchase Order"]:
 			# if test_voucher is a Sales Order/Purchase Order, test error on cancellation of test_voucher
+			frappe.db.set_value("Accounts Settings", "Accounts Settings",
+				"unlink_advance_payment_on_cancelation_of_order", 0)
 			submitted_voucher = frappe.get_doc(test_voucher.doctype, test_voucher.name)
 			self.assertRaises(frappe.LinkExistsError, submitted_voucher.cancel)
 
 	def test_jv_against_stock_account(self):
-		from erpnext.stock.doctype.purchase_receipt.test_purchase_receipt import set_perpetual_inventory
-		set_perpetual_inventory()
+		company = "_Test Company with perpetual inventory"
+		stock_account = get_inventory_account(company)
 
-		jv = frappe.copy_doc(test_records[0])
-		jv.get("accounts")[0].update({
-			"account": get_inventory_account('_Test Company'),
-			"company": "_Test Company",
-			"party_type": None,
-			"party": None
+		from erpnext.accounts.utils import get_stock_and_account_balance
+		account_bal, stock_bal, warehouse_list = get_stock_and_account_balance(stock_account, nowdate(), company)
+		diff = flt(account_bal) - flt(stock_bal)
+
+		if not diff:
+			diff = 100
+
+		jv = frappe.new_doc("Journal Entry")
+		jv.company = company
+		jv.posting_date = nowdate()
+		jv.append("accounts", {
+			"account": stock_account,
+			"cost_center": "Main - TCP1",
+			"debit_in_account_currency": 0 if diff > 0 else abs(diff),
+			"credit_in_account_currency": diff if diff > 0 else 0
 		})
-
+		
+		jv.append("accounts", {
+			"account": "Stock Adjustment - TCP1",
+			"cost_center": "Main - TCP1",
+			"debit_in_account_currency": diff if diff > 0 else 0,
+			"credit_in_account_currency": 0 if diff > 0 else abs(diff)
+		})
 		jv.insert()
 
-		from erpnext.accounts.general_ledger import StockAccountInvalidTransaction
-		self.assertRaises(StockAccountInvalidTransaction, jv.submit)
-
-		set_perpetual_inventory(0)
+		if account_bal == stock_bal:
+			self.assertRaises(StockAccountInvalidTransaction, jv.submit)
+			frappe.db.rollback()
+		else:
+			jv.submit()
+			jv.cancel()
 
 	def test_multi_currency(self):
 		jv = make_journal_entry("_Test Bank USD - _TC",
@@ -140,7 +160,11 @@ class TestJournalEntry(unittest.TestCase):
 		self.assertFalse(gle)
 
 	def test_reverse_journal_entry(self):
+<<<<<<< HEAD
 		from erpnext.accounts.doctype.journal_entry.journal_entry import make_reverse_journal_entry 
+=======
+		from erpnext.accounts.doctype.journal_entry.journal_entry import make_reverse_journal_entry
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		jv = make_journal_entry("_Test Bank USD - _TC",
 			"Sales - _TC", 100, exchange_rate=50, save=False)
 
@@ -279,6 +303,7 @@ class TestJournalEntry(unittest.TestCase):
 
 	def test_jv_with_project(self):
 		from erpnext.projects.doctype.project.test_project import make_project
+<<<<<<< HEAD
 		project = make_project({
 			'project_name': 'Journal Entry Project',
 			'project_template_name': 'Test Project Template',
@@ -288,12 +313,29 @@ class TestJournalEntry(unittest.TestCase):
 		jv = make_journal_entry("_Test Cash - _TC", "_Test Bank - _TC", 100, save=False)
 		for d in jv.accounts:
 			d.project = project.project_name
+=======
+
+		if not frappe.db.exists("Project", {"project_name": "Journal Entry Project"}):
+			project = make_project({
+				'project_name': 'Journal Entry Project',
+				'project_template_name': 'Test Project Template',
+				'start_date': '2020-01-01'
+			})
+			project_name = project.name
+		else:
+			project_name = frappe.get_value("Project", {"project_name": "_Test Project"})
+
+		jv = make_journal_entry("_Test Cash - _TC", "_Test Bank - _TC", 100, save=False)
+		for d in jv.accounts:
+			d.project = project_name
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		jv.voucher_type = "Bank Entry"
 		jv.multi_currency = 0
 		jv.cheque_no = "112233"
 		jv.cheque_date = nowdate()
 		jv.insert()
 		jv.submit()
+<<<<<<< HEAD
 
 		expected_values = {
 			"_Test Cash - _TC": {
@@ -310,6 +352,24 @@ class TestJournalEntry(unittest.TestCase):
 
 		self.assertTrue(gl_entries)
 
+=======
+
+		expected_values = {
+			"_Test Cash - _TC": {
+				"project": project_name
+			},
+			"_Test Bank - _TC": {
+				"project": project_name
+			}
+		}
+
+		gl_entries = frappe.db.sql("""select account, project, debit, credit
+			from `tabGL Entry` where voucher_type='Journal Entry' and voucher_no=%s
+			order by account asc""", jv.name, as_dict=1)
+
+		self.assertTrue(gl_entries)
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		for gle in gl_entries:
 			self.assertEqual(expected_values[gle.account]["project"], gle.project)
 

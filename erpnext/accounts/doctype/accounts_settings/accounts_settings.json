@@ -1,4 +1,8 @@
 {
+<<<<<<< HEAD
+=======
+ "actions": [],
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "creation": "2013-06-24 15:49:57",
  "description": "Settings for Accounts",
  "doctype": "DocType",
@@ -20,6 +24,16 @@
   "book_asset_depreciation_entry_automatically",
   "add_taxes_from_item_tax_template",
   "automatically_fetch_payment_terms",
+<<<<<<< HEAD
+=======
+  "delete_linked_ledger_entries",
+  "deferred_accounting_settings_section",
+  "automatically_process_deferred_accounting_entry",
+  "book_deferred_entries_based_on",
+  "column_break_18",
+  "book_deferred_entries_via_journal_entry",
+  "submit_journal_entries",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "print_settings",
   "show_inclusive_tax_in_print",
   "column_break_12",
@@ -33,7 +47,11 @@
  "fields": [
   {
    "default": "1",
+<<<<<<< HEAD
    "description": "If enabled, the system will post accounting entries for inventory automatically.",
+=======
+   "description": "If enabled, the system will post accounting entries for inventory automatically",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "fieldname": "auto_accounting_for_stock",
    "fieldtype": "Check",
    "hidden": 1,
@@ -41,23 +59,39 @@
    "label": "Make Accounting Entry For Every Stock Movement"
   },
   {
+<<<<<<< HEAD
    "description": "Accounting entry frozen up to this date, nobody can do / modify entry except role specified below.",
    "fieldname": "acc_frozen_upto",
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Accounts Frozen Upto"
+=======
+   "description": "Accounting entries are frozen up to this date. Nobody can create or modify entries except users with the role specified below",
+   "fieldname": "acc_frozen_upto",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Accounts Frozen Till Date"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "description": "Users with this role are allowed to set frozen accounts and create / modify accounting entries against frozen accounts",
    "fieldname": "frozen_accounts_modifier",
    "fieldtype": "Link",
    "in_list_view": 1,
+<<<<<<< HEAD
    "label": "Role Allowed to Set Frozen Accounts & Edit Frozen Entries",
+=======
+   "label": "Role Allowed to Set Frozen Accounts and Edit Frozen Entries",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "options": "Role"
   },
   {
    "default": "Billing Address",
+<<<<<<< HEAD
    "description": "Address used to determine Tax Category in transactions.",
+=======
+   "description": "Address used to determine Tax Category in transactions",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "fieldname": "determine_address_tax_category_from",
    "fieldtype": "Select",
    "label": "Determine Address Tax Category From",
@@ -68,7 +102,11 @@
    "fieldtype": "Column Break"
   },
   {
+<<<<<<< HEAD
    "description": "Role that is allowed to submit transactions that exceed credit limits set.",
+=======
+   "description": "This role is allowed to submit transactions that exceed credit limits",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "fieldname": "credit_controller",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -120,7 +158,11 @@
    "default": "0",
    "fieldname": "show_inclusive_tax_in_print",
    "fieldtype": "Check",
+<<<<<<< HEAD
    "label": "Show Inclusive Tax In Print"
+=======
+   "label": "Show Inclusive Tax in Print"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "fieldname": "column_break_12",
@@ -158,7 +200,11 @@
   },
   {
    "default": "0",
+<<<<<<< HEAD
    "description": "Only select if you have setup Cash Flow Mapper documents",
+=======
+   "description": "Only select this if you have set up the Cash Flow Mapper documents",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "fieldname": "use_custom_cash_flow",
    "fieldtype": "Check",
    "label": "Use Custom Cash Flow Format"
@@ -170,16 +216,74 @@
    "label": "Automatically Fetch Payment Terms"
   },
   {
+<<<<<<< HEAD
    "description": "Percentage you are allowed to bill more against the amount ordered. For example: If the order value is $100 for an item and tolerance is set as 10% then you are allowed to bill for $110.",
    "fieldname": "over_billing_allowance",
    "fieldtype": "Currency",
    "label": "Over Billing Allowance (%)"
+=======
+   "description": "The percentage you are allowed to bill more against the amount ordered. For example, if the order value is $100 for an item and tolerance is set as 10%, then you are allowed to bill up to $110 ",
+   "fieldname": "over_billing_allowance",
+   "fieldtype": "Currency",
+   "label": "Over Billing Allowance (%)"
+  },
+  {
+   "default": "1",
+   "fieldname": "automatically_process_deferred_accounting_entry",
+   "fieldtype": "Check",
+   "label": "Automatically Process Deferred Accounting Entry"
+  },
+  {
+   "fieldname": "deferred_accounting_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Deferred Accounting Settings"
+  },
+  {
+   "fieldname": "column_break_18",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "description": "If this is unchecked, direct GL entries will be created to book deferred revenue or expense",
+   "fieldname": "book_deferred_entries_via_journal_entry",
+   "fieldtype": "Check",
+   "label": "Book Deferred Entries Via Journal Entry"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.book_deferred_entries_via_journal_entry",
+   "description": "If this is unchecked Journal Entries will be saved in a Draft state and will have to be submitted manually",
+   "fieldname": "submit_journal_entries",
+   "fieldtype": "Check",
+   "label": "Submit Journal Entries"
+  },
+  {
+   "default": "Days",
+   "description": "If \"Months\" is selected, a fixed amount will be booked as deferred revenue or expense for each month irrespective of the number of days in a month. It will be prorated if deferred revenue or expense is not booked for an entire month",
+   "fieldname": "book_deferred_entries_based_on",
+   "fieldtype": "Select",
+   "label": "Book Deferred Entries Based On",
+   "options": "Days\nMonths"
+  },
+  {
+   "default": "0",
+   "fieldname": "delete_linked_ledger_entries",
+   "fieldtype": "Check",
+   "label": "Delete Accounting and Stock Ledger Entries on deletion of Transaction"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   }
  ],
  "icon": "icon-cog",
  "idx": 1,
+<<<<<<< HEAD
  "issingle": 1,
  "modified": "2020-10-08 09:40:12.121145",
+=======
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2021-01-05 13:04:00.118892",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Accounts Settings",

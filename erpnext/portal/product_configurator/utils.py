@@ -1,8 +1,14 @@
 import frappe
+<<<<<<< HEAD
 import numpy as np
 from frappe.utils import cint
 from erpnext.portal.product_configurator.item_variants_cache import ItemVariantsCacheManager
 from erpnext.shopping_cart.doctype.shopping_cart_settings.shopping_cart_settings import get_shopping_cart_settings
+=======
+from frappe.utils import cint
+from erpnext.portal.product_configurator.item_variants_cache import ItemVariantsCacheManager
+from erpnext.shopping_cart.product_info import get_product_info_for_website
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 def get_field_filter_data():
 	product_settings = get_product_settings()
@@ -57,7 +63,6 @@ def get_attribute_filter_data():
 
 
 def get_products_for_website(field_filters=None, attribute_filters=None, search=None):
-
 	if attribute_filters:
 		item_codes = get_item_codes_by_attributes(attribute_filters)
 		items_by_attributes = get_items([['name', 'in', item_codes]])
@@ -266,6 +271,8 @@ def get_next_attribute_and_values(item_code, selected_attributes):
 	if exact_match:
 		data = get_product_info_for_website(exact_match[0])
 		product_info = data.product_info
+		if product_info:
+			product_info["allow_items_not_in_stock"] = cint(data.cart_settings.allow_items_not_in_stock)
 		if not data.cart_settings.show_price:
 			product_info = None
 	else:
@@ -383,7 +390,7 @@ def get_items(filters=None, search=None):
 			`tabItem`.`name`, `tabItem`.`item_name`, `tabItem`.`item_code`,
 			`tabItem`.`website_image`, `tabItem`.`image`,
 			`tabItem`.`web_long_description`, `tabItem`.`description`,
-			`tabItem`.`route`
+			`tabItem`.`route`, `tabItem`.`item_group`
 		FROM
 			`tabItem`
 		{left_join}
@@ -408,6 +415,9 @@ def get_items(filters=None, search=None):
 	for r in results:
 		r.description = r.web_long_description or r.description
 		r.image = r.website_image or r.image
+		product_info = get_product_info_for_website(r.item_code, skip_quotation_creation=True).get('product_info')
+		if product_info:
+			r.formatted_price = product_info['price'].get('formatted_price') if product_info['price'] else None
 
 	return results
 

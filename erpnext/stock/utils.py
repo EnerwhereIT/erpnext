@@ -63,6 +63,7 @@ def get_stock_value_on(warehouse=None, posting_date=None, item_code=None):
 		SELECT item_code, stock_value, name, warehouse
 		FROM `tabStock Ledger Entry` sle
 		WHERE posting_date <= %s {0}
+			and is_cancelled = 0
 		ORDER BY timestamp(posting_date, posting_time) DESC, creation DESC
 	""".format(condition), values, as_dict=1)
 
@@ -96,7 +97,15 @@ def get_stock_balance(item_code, warehouse, posting_date=None, posting_time=None
 
 	if with_valuation_rate:
 		if with_serial_no:
+<<<<<<< HEAD
 			serial_nos = get_serial_nos_data_after_transactions(args)
+=======
+			serial_nos = last_entry.get("serial_no")
+
+			if (serial_nos and
+				len(get_serial_nos_data(serial_nos)) < last_entry.qty_after_transaction):
+				serial_nos = get_serial_nos_data_after_transactions(args)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 			return ((last_entry.qty_after_transaction, last_entry.valuation_rate, serial_nos)
 				if last_entry else (0.0, 0.0, 0.0))
@@ -115,6 +124,7 @@ def get_serial_nos_data_after_transactions(args):
 			order by posting_date, posting_time asc """, args, as_dict=1)
 
 	for d in data:
+<<<<<<< HEAD
 		for sn in get_serial_nos_data(d.serial_no):
 			if d.actual_qty > 0:
 				if sn not in serial_nos:
@@ -126,6 +136,12 @@ def get_serial_nos_data_after_transactions(args):
 					serial_nos.remove(sn)
 				else:
 					serial_nos.append(sn)
+=======
+		if d.actual_qty > 0:
+			serial_nos.extend(get_serial_nos_data(d.serial_no))
+		else:
+			serial_nos = list(set(serial_nos) - set(get_serial_nos_data(d.serial_no)))
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	return '\n'.join(serial_nos)
 
@@ -214,7 +230,7 @@ def get_incoming_rate(args, raise_error_if_no_rate=True):
 			currency=erpnext.get_company_currency(args.get('company')), company=args.get('company'),
 			raise_error_if_no_rate=raise_error_if_no_rate)
 
-	return in_rate
+	return flt(in_rate)
 
 def get_avg_purchase_rate(serial_nos):
 	"""get average value of serial numbers"""
@@ -371,3 +387,21 @@ def add_additional_uom_columns(columns, result, include_uom, conversion_factors)
 				row[data.converted_col] = flt(value_before_conversion) / conversion_factor
 
 		result[row_idx] = row
+
+def get_incoming_outgoing_rate_for_cancel(item_code, voucher_type, voucher_no, voucher_detail_no):
+	outgoing_rate = frappe.db.sql("""SELECT abs(stock_value_difference / actual_qty)
+		FROM `tabStock Ledger Entry`
+		WHERE voucher_type = %s and voucher_no = %s
+			and item_code = %s and voucher_detail_no = %s
+			ORDER BY CREATION DESC limit 1""",
+		(voucher_type, voucher_no, item_code, voucher_detail_no))
+
+	outgoing_rate = outgoing_rate[0][0] if outgoing_rate else 0.0
+
+	return outgoing_rate
+
+def is_reposting_item_valuation_in_progress():
+	reposting_in_progress = frappe.db.exists("Repost Item Valuation",
+		{'docstatus': 1, 'status': ['in', ['Queued','In Progress']]})
+	if reposting_in_progress:
+		frappe.msgprint(_("Item valuation reposting in progress. Report might show incorrect item valuation."), alert=1)

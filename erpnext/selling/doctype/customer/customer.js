@@ -6,11 +6,19 @@ frappe.ui.form.on("Customer", {
 
 		frm.make_methods = {
 			'Quotation': () => frappe.model.open_mapped_doc({
+<<<<<<< HEAD
 				method: 'erpnext.selling.doctype.customer.customer.make_quotation',
 				frm: cur_frm
 			}),
 			'Opportunity': () => frappe.model.open_mapped_doc({
 				method: 'erpnext.selling.doctype.customer.customer.make_opportunity',
+=======
+				method: "erpnext.selling.doctype.customer.customer.make_quotation",
+				frm: cur_frm
+			}),
+			'Opportunity': () => frappe.model.open_mapped_doc({
+				method: "erpnext.selling.doctype.customer.customer.make_opportunity",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 				frm: cur_frm
 			})
 		}

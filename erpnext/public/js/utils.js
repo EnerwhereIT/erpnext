@@ -194,6 +194,7 @@ $.extend(erpnext.utils, {
 	add_dimensions: function(report_name, index) {
 		let filters = frappe.query_reports[report_name].filters;
 
+<<<<<<< HEAD
 		erpnext.dimension_filters.forEach((dimension) => {
 			let found = filters.some(el => el.fieldname === dimension['fieldname']);
 
@@ -203,6 +204,23 @@ $.extend(erpnext.utils, {
 					"label": __(dimension["label"]),
 					"fieldtype": "Link",
 					"options": dimension["document_type"]
+=======
+		frappe.call({
+			method: "erpnext.accounts.doctype.accounting_dimension.accounting_dimension.get_dimensions",
+			callback: function(r) {
+				let accounting_dimensions = r.message[0];
+				accounting_dimensions.forEach((dimension) => {
+					let found = filters.some(el => el.fieldname === dimension['fieldname']);
+
+					if (!found) {
+						filters.splice(index, 0, {
+							"fieldname": dimension["fieldname"],
+							"label": __(dimension["label"]),
+							"fieldtype": "Link",
+							"options": dimension["document_type"]
+						});
+					}
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 				});
 			}
 		});
@@ -491,11 +509,19 @@ erpnext.utils.update_child_items = function(opts) {
 								dialog.fields_dict.trans_items.grid.refresh();
 								return true;
 							}
+<<<<<<< HEAD
 						});
 					}
 				}
 			});
 		},
+=======
+						})
+					}
+				}
+			});
+		}
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	}, {
 		fieldtype:'Float',
 		fieldname:"qty",
@@ -540,7 +566,11 @@ erpnext.utils.update_child_items = function(opts) {
 				fieldtype: "Table",
 				label: "Items",
 				cannot_add_rows: cannot_add_row,
+<<<<<<< HEAD
 				in_place_edit: true,
+=======
+				in_place_edit: false,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 				reqd: 1,
 				data: this.data,
 				get_data: () => {
@@ -589,12 +619,7 @@ erpnext.utils.update_child_items = function(opts) {
 }
 
 erpnext.utils.map_current_doc = function(opts) {
-	if(opts.get_query_filters) {
-		opts.get_query = function() {
-			return {filters: opts.get_query_filters};
-		}
-	}
-	var _map = function() {
+	function _map() {
 		if($.isArray(cur_frm.doc.items) && cur_frm.doc.items.length > 0) {
 			// remove first item row if empty
 			if(!cur_frm.doc.items[0].item_code) {
@@ -657,7 +682,7 @@ erpnext.utils.map_current_doc = function(opts) {
 				"method": opts.method,
 				"source_names": opts.source_name,
 				"target_doc": cur_frm.doc,
-				'args': opts.args
+				"args": opts.args
 			},
 			callback: function(r) {
 				if(!r.exc) {
@@ -668,13 +693,28 @@ erpnext.utils.map_current_doc = function(opts) {
 			}
 		});
 	}
-	if(opts.source_doctype) {
-		var d = new frappe.ui.form.MultiSelectDialog({
+
+	let query_args = {};
+	if (opts.get_query_filters) {
+		query_args.filters = opts.get_query_filters;
+	}
+
+	if (opts.get_query_method) {
+		query_args.query = opts.get_query_method;
+	}
+
+	if (query_args.filters || query_args.query) {
+		opts.get_query = () => query_args;
+	}
+
+	if (opts.source_doctype) {
+		const d = new frappe.ui.form.MultiSelectDialog({
 			doctype: opts.source_doctype,
 			target: opts.target,
 			date_field: opts.date_field || undefined,
 			setters: opts.setters,
 			get_query: opts.get_query,
+			add_filters_group: 1,
 			action: function(selections, args) {
 				let values = selections;
 				if(values.length === 0){
@@ -687,7 +727,11 @@ erpnext.utils.map_current_doc = function(opts) {
 				_map();
 			},
 		});
-	} else if(opts.source_name) {
+
+		return d;
+	}
+
+	if (opts.source_name) {
 		opts.source_name = [opts.source_name];
 		_map();
 	}

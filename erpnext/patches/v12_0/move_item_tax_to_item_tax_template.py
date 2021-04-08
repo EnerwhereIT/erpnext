@@ -100,8 +100,15 @@ def get_item_tax_template(item_tax_templates, item_tax_map, item_code, parenttyp
 				tax_type = None
 			else:
 				company = get_company(parts[-1], parenttype, parent)
+<<<<<<< HEAD
 				parent_account = frappe.db.get_value("Account",
 					filters={"account_type": "Tax", "root_type": "Liability", "is_group": 0, "company": company}, fieldname="parent_account")
+=======
+				parent_account = frappe.get_value("Account", {"account_name": account_name, "company": company}, "parent_account")
+				if not parent_account:
+					parent_account = frappe.db.get_value("Account",
+						filters={"account_type": "Tax", "root_type": "Liability", "is_group": 0, "company": company}, fieldname="parent_account")
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 				if not parent_account:
 					parent_account = frappe.db.get_value("Account",
 						filters={"account_type": "Tax", "root_type": "Liability", "is_group": 1, "company": company})
@@ -115,10 +122,22 @@ def get_item_tax_template(item_tax_templates, item_tax_map, item_code, parenttyp
 				if not tax_type:
 					account = frappe.new_doc("Account")
 					account.update(filters)
+<<<<<<< HEAD
 					account.insert()
 					tax_type = account.name
 
 		if tax_type:
+=======
+					try:
+						account.insert()
+						tax_type = account.name
+					except frappe.DuplicateEntryError:
+						tax_type = frappe.db.get_value("Account", {"account_name": account_name, "company": company}, "name")
+
+		account_type = frappe.get_cached_value("Account", tax_type, "account_type")
+
+		if tax_type and account_type in ('Tax', 'Chargeable', 'Income Account', 'Expense Account', 'Expenses Included In Valuation'):
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			item_tax_template.append("taxes", {"tax_type": tax_type, "tax_rate": tax_rate})
 			item_tax_templates.setdefault(item_tax_template.title, {})
 			item_tax_templates[item_tax_template.title][tax_type] = tax_rate

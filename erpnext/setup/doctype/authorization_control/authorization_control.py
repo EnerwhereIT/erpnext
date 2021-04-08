@@ -76,7 +76,11 @@ class AuthorizationControl(TransactionBase):
 		add_cond = ''
 		auth_value = av_dis
 
+<<<<<<< HEAD
 		if val == 1: add_cond += " and system_user = {0}".format(frappe.db.escape(session['user']))
+=======
+		if val == 1: add_cond += " and system_user = {}".format(frappe.db.escape(session['user']))
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		elif val == 2: add_cond += " and system_role IN %s" % ("('"+"','".join(frappe.get_roles())+"')")
 		else: add_cond += " and ifnull(system_user,'') = '' and ifnull(system_role,'') = ''"
 
@@ -85,7 +89,11 @@ class AuthorizationControl(TransactionBase):
 			if doc_obj:
 				if doc_obj.doctype == 'Sales Invoice': customer = doc_obj.customer
 				else: customer = doc_obj.customer_name
+<<<<<<< HEAD
 				add_cond = " and master_name = {0}".format(frappe.db.escape(customer))
+=======
+				add_cond = " and master_name = {}".format(frappe.db.escape(customer))
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		if based_on == 'Itemwise Discount':
 			if doc_obj:
 				for t in doc_obj.get("items"):

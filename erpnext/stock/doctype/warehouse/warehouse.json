@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
  "creation": "2013-03-07 18:50:32",
@@ -9,9 +10,16 @@
  "field_order": [
   "warehouse_detail",
   "warehouse_name",
+<<<<<<< HEAD
   "section_break_3",
   "warehouse_type",
   "parent_warehouse",
+=======
+  "column_break_3",
+  "warehouse_type",
+  "parent_warehouse",
+  "default_in_transit_warehouse",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "is_group",
   "column_break_4",
   "account",
@@ -227,15 +235,31 @@
    "options": "Warehouse Type"
   },
   {
+<<<<<<< HEAD
    "fieldname": "section_break_3",
    "fieldtype": "Section Break"
+=======
+   "fieldname": "column_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval: doc.warehouse_type !== 'Transit';",
+   "fieldname": "default_in_transit_warehouse",
+   "fieldtype": "Link",
+   "label": "Default In-Transit Warehouse",
+   "options": "Warehouse"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   }
  ],
  "icon": "fa fa-building",
  "idx": 1,
  "is_tree": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2020-08-03 18:41:52.442502",
+=======
+ "modified": "2021-02-16 17:21:52.380098",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Warehouse",

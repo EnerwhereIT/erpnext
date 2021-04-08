@@ -23,10 +23,17 @@ frappe.ui.form.on("Tally Migration", {
 						frappe.msgprint({
 							message: __("An error has occurred during {0}. Check {1} for more details",
 								[
+<<<<<<< HEAD
 									repl("<a href='#Form/Tally Migration/%(tally_document)s' class='variant-click'>%(tally_document)s</a>", {
 										tally_document: frm.docname
 									}),
 									"<a href='#List/Error Log' class='variant-click'>Error Log</a>"
+=======
+									repl("<a href='/app/tally-migration/%(tally_document)s' class='variant-click'>%(tally_document)s</a>", {
+										tally_document: frm.docname
+									}),
+									"<a href='/app/error-log' class='variant-click'>Error Log</a>"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 								]
 							),
 							title: __("Tally Migration Error"),

@@ -1,22 +1,34 @@
-# Copyright (c) 2013, Frappe Technologies Pvt. Ltd. and contributors
-# For license information, please see license.txt
+# Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
+# License: GNU General Public License v3. See license.txt
 
 from __future__ import unicode_literals
 import frappe
-from frappe.utils import flt
 from frappe import _
+<<<<<<< HEAD
 from erpnext.hr.doctype.leave_application.leave_application import get_leaves_for_period, get_leave_balance_on
 from erpnext.hr.report.employee_leave_balance.employee_leave_balance import calculate_leaves_details , get_department_leave_approver_map
 
 def execute(filters=None):
 	if filters.to_date <= filters.from_date:
 		frappe.throw(_('From Date should be less than To Date'))
+=======
+from frappe.utils import flt
+from erpnext.hr.doctype.leave_application.leave_application \
+	import get_leave_details
 
-	columns = get_columns()
-	data = get_data(filters)
+from erpnext.hr.report.employee_leave_balance.employee_leave_balance \
+	import get_department_leave_approver_map
+
+def execute(filters=None):
+	leave_types = frappe.db.sql_list("select name from `tabLeave Type` order by name asc")
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
+
+	columns = get_columns(leave_types)
+	data = get_data(filters, leave_types)
 
 	return columns, data
 
+<<<<<<< HEAD
 def get_columns():
 	columns = [{
 		'label': _('Leave Type'),
@@ -61,21 +73,41 @@ def get_columns():
 		'fieldname': 'closing_balance',
 		'width': 120,
 	}]
+=======
+def get_columns(leave_types):
+	columns = [
+		_("Employee") + ":Link.Employee:150",
+		_("Employee Name") + "::200",
+		_("Department") +"::150"
+	]
+
+	for leave_type in leave_types:
+		columns.append(_(leave_type) + ":Float:160")
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	return columns
 
-def get_data(filters):
-	leave_types = frappe.db.sql_list("SELECT `name` FROM `tabLeave Type` ORDER BY `name` ASC")
+def get_conditions(filters):
+	conditions = {
+		"status": "Active",
+		"company": filters.company,
+	}
+	if filters.get("department"):
+		conditions.update({"department": filters.get("department")})
+	if filters.get("employee"):
+		conditions.update({"employee": filters.get("employee")})
 
+	return conditions
+
+def get_data(filters, leave_types):
+	user = frappe.session.user
 	conditions = get_conditions(filters)
 
-	user = frappe.session.user
-	department_approver_map = get_department_leave_approver_map(filters.get('department'))
-
-	active_employees = frappe.get_list('Employee',
+	active_employees = frappe.get_all("Employee",
 		filters=conditions,
-		fields=['name', 'employee_name', 'department', 'user_id', 'leave_approver'])
+		fields=["name", "employee_name", "department", "user_id", "leave_approver"])
 
+<<<<<<< HEAD
 	data = []
 
 	for leave_type in leave_types:
@@ -116,3 +148,27 @@ def get_conditions(filters):
 
 	return conditions
 
+=======
+	department_approver_map = get_department_leave_approver_map(filters.get('department'))
+
+	data = []
+	for employee in active_employees:
+		leave_approvers = department_approver_map.get(employee.department_name, [])
+		if employee.leave_approver:
+			leave_approvers.append(employee.leave_approver)
+
+		if (len(leave_approvers) and user in leave_approvers) or (user in ["Administrator", employee.user_id]) or ("HR Manager" in frappe.get_roles(user)):
+			row = [employee.name, employee.employee_name, employee.department]
+			available_leave = get_leave_details(employee.name, filters.date)
+			for leave_type in leave_types:
+				remaining = 0
+				if leave_type in available_leave["leave_allocation"]:
+				# opening balance
+					remaining = available_leave["leave_allocation"][leave_type]['remaining_leaves']
+
+				row += [remaining]
+
+			data.append(row)
+
+	return data
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

@@ -99,6 +99,10 @@ class PaymentReconciliation(Document):
 				and gl.against_voucher_type = %(voucher_type)s
 				and doc.docstatus = 1 and gl.party = %(party)s
 				and gl.party_type = %(party_type)s and gl.account = %(account)s
+<<<<<<< HEAD
+=======
+				and gl.is_cancelled = 0
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			GROUP BY doc.name
 			Having
 				amount > 0
@@ -112,7 +116,11 @@ class PaymentReconciliation(Document):
 				'party_type': self.party_type,
 				'voucher_type': voucher_type,
 				'account': self.receivable_payable_account
+<<<<<<< HEAD
 			}, as_dict=1)
+=======
+			}, as_dict=1, debug=1)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	def add_payment_entries(self, entries):
 		self.set('payments', [])

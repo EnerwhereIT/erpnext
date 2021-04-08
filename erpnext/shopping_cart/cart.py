@@ -42,13 +42,36 @@ def get_cart_quotation(doc=None):
 
 	return {
 		"doc": decorate_quotation_doc(doc),
+<<<<<<< HEAD
 		"shipping_addresses": [{"name": address.name, "display": address.display}
 			for address in addresses if address.address_type == "Shipping"],
 		"billing_addresses": [{"name": address.name, "display": address.display}
 			for address in addresses if address.address_type == "Billing"],
+=======
+		"shipping_addresses": get_shipping_addresses(party),
+		"billing_addresses": get_billing_addresses(party),
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		"shipping_rules": get_applicable_shipping_rules(party),
 		"cart_settings": frappe.get_cached_doc("Shopping Cart Settings")
 	}
+
+@frappe.whitelist()
+def get_shipping_addresses(party=None):
+	if not party:
+		party = get_party()
+	addresses = get_address_docs(party=party)
+	return [{"name": address.name, "title": address.address_title, "display": address.display}
+		for address in addresses if address.address_type == "Shipping"
+	]
+
+@frappe.whitelist()
+def get_billing_addresses(party=None):
+	if not party:
+		party = get_party()
+	addresses = get_address_docs(party=party)
+	return [{"name": address.name, "title": address.address_title, "display": address.display}
+		for address in addresses if address.address_type == "Billing"
+	]
 
 @frappe.whitelist()
 def place_order():
@@ -178,6 +201,13 @@ def create_lead_for_item_inquiry(lead, subject, message):
 	lead_doc.update(lead)
 	lead_doc.set('lead_owner', '')
 
+	if not frappe.db.exists('Lead Source', 'Product Inquiry'):
+		frappe.get_doc({
+			'doctype': 'Lead Source',
+			'source_name' : 'Product Inquiry'
+		}).insert(ignore_permissions=True)
+	lead_doc.set('source', 'Product Inquiry')
+
 	try:
 		lead_doc.save(ignore_permissions=True)
 	except frappe.exceptions.DuplicateEntryError:
@@ -201,27 +231,44 @@ def get_terms_and_conditions(terms_name):
 @frappe.whitelist()
 def update_cart_address(address_type, address_name):
 	quotation = _get_cart_quotation()
+<<<<<<< HEAD
 	address_display = get_address_display(frappe.get_doc("Address", address_name).as_dict())
+=======
+	address_doc = frappe.get_doc("Address", address_name).as_dict()
+	address_display = get_address_display(address_doc)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	if address_type.lower() == "billing":
 		quotation.customer_address = address_name
 		quotation.address_display = address_display
 		quotation.shipping_address_name == quotation.shipping_address_name or address_name
+<<<<<<< HEAD
+=======
+		address_doc = next((doc for doc in get_billing_addresses() if doc["name"] == address_name), None)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	elif address_type.lower() == "shipping":
 		quotation.shipping_address_name = address_name
 		quotation.shipping_address = address_display
 		quotation.customer_address == quotation.customer_address or address_name
+<<<<<<< HEAD
 
+=======
+		address_doc = next((doc for doc in get_shipping_addresses() if doc["name"] == address_name), None)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	apply_cart_settings(quotation=quotation)
 
 	quotation.flags.ignore_permissions = True
 	quotation.save()
 
 	context = get_cart_quotation(quotation)
+	context['address'] = address_doc
+
 	return {
 		"taxes": frappe.render_template("templates/includes/order/order_taxes.html",
 			context),
-		}
+		"address": frappe.render_template("templates/includes/cart/address_card.html",
+			context)
+	}
 
 def guess_territory():
 	territory = None
@@ -343,7 +390,11 @@ def _set_price_list(cart_settings, quotation=None):
 	selling_price_list = None
 
 	# check if default customer price list exists
+<<<<<<< HEAD
 	if party_name:
+=======
+	if party_name and frappe.db.exists("Customer", party_name):
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		selling_price_list = get_default_price_list(frappe.get_doc("Customer", party_name))
 
 	# check default price list in shopping cart
@@ -431,10 +482,13 @@ def get_party(user=None):
 		return customer
 
 def get_debtors_account(cart_settings):
+	if not cart_settings.payment_gateway_account:
+		frappe.throw(_("Payment Gateway Account not set"), _("Mandatory"))
+
 	payment_gateway_account_currency = \
 		frappe.get_doc("Payment Gateway Account", cart_settings.payment_gateway_account).currency
 
-	account_name = _("Debtors ({0})".format(payment_gateway_account_currency))
+	account_name = _("Debtors ({0})").format(payment_gateway_account_currency)
 
 	debtors_account_name = get_account_name("Receivable", "Asset", is_group=0,\
 		account_currency=payment_gateway_account_currency, company=cart_settings.company)

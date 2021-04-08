@@ -5,19 +5,22 @@ from __future__ import unicode_literals
 
 import frappe, erpnext
 import unittest
-from frappe.utils import today, add_months
-from erpnext.hr.doctype.employee.test_employee import make_employee
-from erpnext.hr.doctype.leave_application.leave_application import get_leave_balance_on
 
 test_dependencies = ["Employee", "Leave Type", "Leave Policy"]
 
 class TestLeavePeriod(unittest.TestCase):
-	def setUp(self):
-		frappe.db.sql("delete from `tabLeave Period`")
+	pass
 
-	def test_leave_grant(self):
-		leave_type = "_Test Leave Type"
+def create_leave_period(from_date, to_date, company=None):
+	leave_period = frappe.db.get_value('Leave Period',
+		dict(company=company or erpnext.get_default_company(),
+			from_date=from_date,
+			to_date=to_date,
+			is_active=1), 'name')
+	if leave_period:
+		return frappe.get_doc("Leave Period", leave_period)
 
+<<<<<<< HEAD
 		# create the leave policy
 		leave_policy = frappe.get_doc({
 			"doctype": "Leave Policy",
@@ -52,6 +55,8 @@ def create_leave_period(from_date, to_date, company=None):
 	if leave_period:
 		return frappe.get_doc("Leave Period", leave_period)
 
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	leave_period = frappe.get_doc({
 		"doctype": "Leave Period",
 		"company": company or erpnext.get_default_company(),

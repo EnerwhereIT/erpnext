@@ -8,10 +8,27 @@ frappe.ui.form.on('Employee Onboarding', {
 		frm.add_fetch("employee_onboarding_template", "designation", "designation");
 		frm.add_fetch("employee_onboarding_template", "employee_grade", "employee_grade");
 
+<<<<<<< HEAD
 		frm.set_query('job_offer', function () {
 			return {
 				filters: {
 					'job_applicant': frm.doc.job_applicant
+=======
+
+		frm.set_query("job_applicant", function () {
+			return {
+				filters:{
+					"status": "Accepted",
+				}
+			};
+		});
+
+		frm.set_query('job_offer', function () {
+			return {
+				filters: {
+					'job_applicant': frm.doc.job_applicant,
+					'docstatus': 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 				}
 			};
 		});

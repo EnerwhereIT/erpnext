@@ -43,6 +43,7 @@ erpnext.SerialNoBatchSelector = Class.extend({
 				label: __(me.warehouse_details.type),
 				default: typeof me.warehouse_details.name == "string" ? me.warehouse_details.name : '',
 				onchange: function(e) {
+					me.warehouse_details.name = this.get_value();
 
 					if(me.has_batch && !me.has_serial_no) {
 						fields = fields.concat(me.get_batch_fields());
@@ -50,7 +51,6 @@ erpnext.SerialNoBatchSelector = Class.extend({
 						fields = fields.concat(me.get_serial_no_fields());
 					}
 
-					me.warehouse_details.name = this.get_value();
 					var batches = this.layout.fields_dict.batches;
 					if(batches) {
 						batches.grid.df.data = [];
@@ -75,7 +75,11 @@ erpnext.SerialNoBatchSelector = Class.extend({
 				fieldtype:'Float',
 				read_only: me.has_batch && !me.has_serial_no,
 				label: __(me.has_batch && !me.has_serial_no ? 'Total Qty' : 'Qty'),
+<<<<<<< HEAD
 				default: 0
+=======
+				default: flt(me.item.stock_qty),
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			},
 			{
 				fieldname: 'auto_fetch_button',
@@ -91,15 +95,26 @@ erpnext.SerialNoBatchSelector = Class.extend({
 							qty: qty,
 							item_code: me.item_code,
 							warehouse: typeof me.warehouse_details.name == "string" ? me.warehouse_details.name : '',
+<<<<<<< HEAD
 							batch_no: me.item.batch_no || null
+=======
+							batch_no: me.item.batch_no || null,
+							posting_date: me.frm.doc.posting_date || me.frm.doc.transaction_date
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 						}
 					});
 
 					numbers.then((data) => {
 						let auto_fetched_serial_numbers = data.message;
 						let records_length = auto_fetched_serial_numbers.length;
+						if (!records_length) {
+							const warehouse = me.dialog.fields_dict.warehouse.get_value().bold();
+							frappe.msgprint(
+								__('Serial numbers unavailable for Item {0} under warehouse {1}. Please try changing warehouse.', [me.item.item_code.bold(), warehouse])
+							);
+						}
 						if (records_length < qty) {
-							frappe.msgprint(`Fetched only ${records_length} serial numbers.`);
+							frappe.msgprint(__('Fetched only {0} available serial numbers.', [records_length]));
 						}
 						let serial_no_list_field = this.dialog.fields_dict.serial_no;
 						numbers = auto_fetched_serial_numbers.join('\n');
@@ -185,15 +200,12 @@ erpnext.SerialNoBatchSelector = Class.extend({
 		}
 		if(this.has_batch && !this.has_serial_no) {
 			if(values.batches.length === 0 || !values.batches) {
-				frappe.throw(__("Please select batches for batched item "
-					+ values.item_code));
-				return false;
+				frappe.throw(__("Please select batches for batched item {0}", [values.item_code]));
 			}
 			values.batches.map((batch, i) => {
 				if(!batch.selected_qty || batch.selected_qty === 0 ) {
 					if (!this.show_dialog) {
-						frappe.throw(__("Please select quantity on row " + (i+1)));
-						return false;
+						frappe.throw(__("Please select quantity on row {0}", [i+1]));
 					}
 				}
 			});
@@ -202,9 +214,13 @@ erpnext.SerialNoBatchSelector = Class.extend({
 		} else {
 			let serial_nos = values.serial_no || '';
 			if (!serial_nos || !serial_nos.replace(/\s/g, '').length) {
+<<<<<<< HEAD
 				frappe.throw(__("Please enter serial numbers for serialized item "
 					+ values.item_code));
 				return false;
+=======
+				frappe.throw(__("Please enter serial numbers for serialized item {0}", [values.item_code]));
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			}
 			return true;
 		}
@@ -353,8 +369,12 @@ erpnext.SerialNoBatchSelector = Class.extend({
 							});
 							if (selected_batches.includes(batch_no)) {
 								this.set_value("");
+<<<<<<< HEAD
 								frappe.throw(__(`Batch ${batch_no} already selected.`));
 								return;
+=======
+								frappe.throw(__('Batch {0} already selected.', [val]));
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 							}
 
 							if (me.warehouse_details.name) {
@@ -373,8 +393,7 @@ erpnext.SerialNoBatchSelector = Class.extend({
 
 							} else {
 								this.set_value("");
-								frappe.throw(__(`Please select a warehouse to get available
-									quantities`));
+								frappe.throw(__('Please select a warehouse to get available quantities'));
 							}
 							// e.stopImmediatePropagation();
 						}
@@ -409,8 +428,7 @@ erpnext.SerialNoBatchSelector = Class.extend({
 								parseFloat(available_qty) < parseFloat(selected_qty)) {
 
 								this.set_value('0');
-								frappe.throw(__(`For transfer from source, selected quantity cannot be
-									greater than available quantity`));
+								frappe.throw(__('For transfer from source, selected quantity cannot be greater than available quantity'));
 							} else {
 								this.grid.refresh();
 							}
@@ -444,6 +462,21 @@ erpnext.SerialNoBatchSelector = Class.extend({
 		if (me.warehouse_details.name) {
 			serial_no_filters['warehouse'] = me.warehouse_details.name;
 		}
+
+		if (me.frm.doc.doctype === 'POS Invoice' && !this.showing_reserved_serial_nos_error) {
+			frappe.call({
+				method: "erpnext.stock.doctype.serial_no.serial_no.get_pos_reserved_serial_nos",
+				args: {
+					filters: {
+						item_code: me.item_code,
+						warehouse: typeof me.warehouse_details.name == "string" ? me.warehouse_details.name : '',
+					}
+				}
+			}).then((data) => {
+				serial_no_filters['name'] = ["not in", data.message[0]]
+			})
+		}
+
 		return [
 			{fieldtype: 'Section Break', label: __('Serial Numbers')},
 			{

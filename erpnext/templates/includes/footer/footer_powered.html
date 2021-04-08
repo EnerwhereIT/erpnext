@@ -12,8 +12,13 @@
 } %}
 
 {% set link = '' %}
+{% set label = '' %}
 {% if domains %}
+<<<<<<< HEAD
     {% set label = domains[0].domain %}
+=======
+	{% set label = domains[0].domain %}
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	{% set link = links[label] %}
 {% endif %}
 

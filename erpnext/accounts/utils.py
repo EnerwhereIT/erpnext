@@ -12,11 +12,12 @@ from frappe.utils import formatdate, get_number_format_info
 from six import iteritems
 # imported to enable erpnext.accounts.utils.get_account_currency
 from erpnext.accounts.doctype.account.account import get_account_currency
+from frappe.model.meta import get_field_precision
 
 from erpnext.stock.utils import get_stock_value_on
 from erpnext.stock import get_warehouse_account_map
 
-
+class StockValueAndAccountBalanceOutOfSync(frappe.ValidationError): pass
 class FiscalYearError(frappe.ValidationError): pass
 
 @frappe.whitelist()
@@ -57,6 +58,9 @@ def get_fiscal_years(transaction_date=None, fiscal_year=None, label="Date", verb
 
 		frappe.cache().hset("fiscal_years", company, fiscal_years)
 
+	if not transaction_date and not fiscal_year:
+		return fiscal_years
+
 	if transaction_date:
 		transaction_date = getdate(transaction_date)
 
@@ -78,9 +82,30 @@ def get_fiscal_years(transaction_date=None, fiscal_year=None, label="Date", verb
 	error_msg = _("""{0} {1} is not in any active Fiscal Year""").format(label, formatdate(transaction_date))
 	if company:
 		error_msg = _("""{0} for {1}""").format(error_msg, frappe.bold(company))
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	if verbose==1: frappe.msgprint(error_msg)
 	raise FiscalYearError(error_msg)
+
+@frappe.whitelist()
+def get_fiscal_year_filter_field(company=None):
+	field = {
+		"fieldtype": "Select",
+		"options": [],
+		"operator": "Between",
+		"query_value": True
+	}
+	fiscal_years = get_fiscal_years(company=company)
+	for fiscal_year in fiscal_years:
+		field["options"].append({
+			"label": fiscal_year.name,
+			"value": fiscal_year.name,
+			"query_value": [fiscal_year.year_start_date.strftime("%Y-%m-%d"), fiscal_year.year_end_date.strftime("%Y-%m-%d")]
+		})
+	return field
 
 def validate_fiscal_year(date, fiscal_year, company, label="Date", doc=None):
 	years = [f[0] for f in get_fiscal_years(date, label=_(label), company=company)]
@@ -105,7 +130,7 @@ def get_balance_on(account=None, date=None, party_type=None, party=None, company
 		cost_center = frappe.form_dict.get("cost_center")
 
 
-	cond = []
+	cond = ["is_cancelled=0"]
 	if date:
 		cond.append("posting_date <= %s" % frappe.db.escape(cstr(date)))
 	else:
@@ -189,7 +214,7 @@ def get_balance_on(account=None, date=None, party_type=None, party=None, company
 		return flt(bal)
 
 def get_count_on(account, fieldname, date):
-	cond = []
+	cond = ["is_cancelled=0"]
 	if date:
 		cond.append("posting_date <= %s" % frappe.db.escape(cstr(date)))
 	else:
@@ -514,7 +539,7 @@ def remove_ref_doc_link_from_jv(ref_type, ref_no):
 			where reference_type=%s and reference_name=%s
 			and docstatus < 2""", (now(), frappe.session.user, ref_type, ref_no))
 
-		frappe.msgprint(_("Journal Entries {0} are un-linked".format("\n".join(linked_jv))))
+		frappe.msgprint(_("Journal Entries {0} are un-linked").format("\n".join(linked_jv)))
 
 def remove_ref_doc_link_from_pe(ref_type, ref_no):
 	linked_pe = frappe.db.sql_list("""select parent from `tabPayment Entry Reference`
@@ -537,7 +562,7 @@ def remove_ref_doc_link_from_pe(ref_type, ref_no):
 				where name=%s""", (pe_doc.total_allocated_amount, pe_doc.base_total_allocated_amount,
 					pe_doc.unallocated_amount, now(), frappe.session.user, pe))
 
-		frappe.msgprint(_("Payment Entries {0} are un-linked".format("\n".join(linked_pe))))
+		frappe.msgprint(_("Payment Entries {0} are un-linked").format("\n".join(linked_pe)))
 
 @frappe.whitelist()
 def get_company_default(company, fieldname):
@@ -565,6 +590,7 @@ def fix_total_debit_credit():
 				(dr_or_cr, dr_or_cr, '%s', '%s', '%s', dr_or_cr),
 				(d.diff, d.voucher_type, d.voucher_no))
 
+<<<<<<< HEAD
 def get_stock_and_account_balance(account=None, posting_date=None, company=None):
 	if not posting_date: posting_date = nowdate()
 
@@ -583,6 +609,8 @@ def get_stock_and_account_balance(account=None, posting_date=None, company=None)
 	precision = frappe.get_precision("Journal Entry Account", "debit_in_account_currency")
 	return flt(account_balance, precision), flt(total_stock_value, precision), related_warehouses
 
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 def get_currency_precision():
 	precision = cint(frappe.db.get_default("currency_precision"))
 	if not precision:
@@ -666,6 +694,7 @@ def get_outstanding_invoices(party_type, party, account, condition=None, filters
 		where
 			party_type = %(party_type)s and party = %(party)s
 			and account = %(account)s and {dr_or_cr} > 0
+			and is_cancelled=0
 			{condition}
 			and ((voucher_type = 'Journal Entry'
 					and (against_voucher = '' or against_voucher is null))
@@ -688,6 +717,7 @@ def get_outstanding_invoices(party_type, party, account, condition=None, filters
 			and account = %(account)s
 			and {payment_dr_or_cr} > 0
 			and against_voucher is not null and against_voucher != ''
+			and is_cancelled=0
 		group by against_voucher_type, against_voucher
 	""".format(payment_dr_or_cr=payment_dr_or_cr), {
 		"party_type": party_type,
@@ -777,7 +807,7 @@ def get_children(doctype, parent, company, is_root=False):
 
 	return acc
 
-def create_payment_gateway_account(gateway):
+def create_payment_gateway_account(gateway, payment_channel="Email"):
 	from erpnext.setup.setup_wizard.operations.company_setup import create_bank_account
 
 	company = frappe.db.get_value("Global Defaults", None, "default_company")
@@ -812,7 +842,8 @@ def create_payment_gateway_account(gateway):
 			"is_default": 1,
 			"payment_gateway": gateway,
 			"payment_account": bank_account.name,
-			"currency": bank_account.account_currency
+			"currency": bank_account.account_currency,
+			"payment_channel": payment_channel
 		}).insert(ignore_permissions=True)
 
 	except frappe.DuplicateEntryError:
@@ -880,8 +911,182 @@ def get_coa(doctype, parent, is_root, chart=None):
 
 	return accounts
 
+<<<<<<< HEAD
 def get_stock_accounts(company):
 	return frappe.get_all("Account", filters = {
 		"account_type": "Stock",
 		"company": company
 	})
+=======
+def update_gl_entries_after(posting_date, posting_time, for_warehouses=None, for_items=None,
+		warehouse_account=None, company=None):
+	stock_vouchers = get_future_stock_vouchers(posting_date, posting_time, for_warehouses, for_items, company)
+	repost_gle_for_stock_vouchers(stock_vouchers, posting_date, company, warehouse_account)
+
+
+def repost_gle_for_stock_vouchers(stock_vouchers, posting_date, company=None, warehouse_account=None):
+	def _delete_gl_entries(voucher_type, voucher_no):
+		frappe.db.sql("""delete from `tabGL Entry`
+			where voucher_type=%s and voucher_no=%s""", (voucher_type, voucher_no))
+
+	if not warehouse_account:
+		warehouse_account = get_warehouse_account_map(company)
+
+	precision = get_field_precision(frappe.get_meta("GL Entry").get_field("debit")) or 2
+
+	gle = get_voucherwise_gl_entries(stock_vouchers, posting_date)
+	for voucher_type, voucher_no in stock_vouchers:
+		existing_gle = gle.get((voucher_type, voucher_no), [])
+		voucher_obj = frappe.get_cached_doc(voucher_type, voucher_no)
+		expected_gle = voucher_obj.get_gl_entries(warehouse_account)
+		if expected_gle:
+			if not existing_gle or not compare_existing_and_expected_gle(existing_gle, expected_gle, precision):
+				_delete_gl_entries(voucher_type, voucher_no)
+				voucher_obj.make_gl_entries(gl_entries=expected_gle, from_repost=True)
+		else:
+			_delete_gl_entries(voucher_type, voucher_no)
+
+def get_future_stock_vouchers(posting_date, posting_time, for_warehouses=None, for_items=None, company=None):
+	future_stock_vouchers = []
+
+	values = []
+	condition = ""
+	if for_items:
+		condition += " and item_code in ({})".format(", ".join(["%s"] * len(for_items)))
+		values += for_items
+
+	if for_warehouses:
+		condition += " and warehouse in ({})".format(", ".join(["%s"] * len(for_warehouses)))
+		values += for_warehouses
+
+	if company:
+		condition += " and company = %s"
+		values.append(company)
+
+	for d in frappe.db.sql("""select distinct sle.voucher_type, sle.voucher_no
+		from `tabStock Ledger Entry` sle
+		where
+			timestamp(sle.posting_date, sle.posting_time) >= timestamp(%s, %s)
+			and is_cancelled = 0
+			{condition}
+		order by timestamp(sle.posting_date, sle.posting_time) asc, creation asc for update""".format(condition=condition),
+		tuple([posting_date, posting_time] + values), as_dict=True):
+			future_stock_vouchers.append([d.voucher_type, d.voucher_no])
+
+	return future_stock_vouchers
+
+def get_voucherwise_gl_entries(future_stock_vouchers, posting_date):
+	gl_entries = {}
+	if future_stock_vouchers:
+		for d in frappe.db.sql("""select * from `tabGL Entry`
+			where posting_date >= %s and voucher_no in (%s)""" %
+			('%s', ', '.join(['%s']*len(future_stock_vouchers))),
+			tuple([posting_date] + [d[1] for d in future_stock_vouchers]), as_dict=1):
+				gl_entries.setdefault((d.voucher_type, d.voucher_no), []).append(d)
+
+	return gl_entries
+
+def compare_existing_and_expected_gle(existing_gle, expected_gle, precision):
+	matched = True
+	for entry in expected_gle:
+		account_existed = False
+		for e in existing_gle:
+			if entry.account == e.account:
+				account_existed = True
+			if (entry.account == e.account and entry.against_account == e.against_account
+					and (not entry.cost_center or not e.cost_center or entry.cost_center == e.cost_center)
+					and ( flt(entry.debit, precision) != flt(e.debit, precision) or
+						flt(entry.credit, precision) != flt(e.credit, precision))):
+				matched = False
+				break
+		if not account_existed:
+			matched = False
+			break
+	return matched
+
+def check_if_stock_and_account_balance_synced(posting_date, company, voucher_type=None, voucher_no=None):
+	if not cint(erpnext.is_perpetual_inventory_enabled(company)):
+		return
+
+	accounts = get_stock_accounts(company, voucher_type, voucher_no)
+	stock_adjustment_account = frappe.db.get_value("Company", company, "stock_adjustment_account")
+
+	for account in accounts:
+		account_bal, stock_bal, warehouse_list = get_stock_and_account_balance(account,
+			posting_date, company)
+
+		if abs(account_bal - stock_bal) > 0.1:
+			precision = get_field_precision(frappe.get_meta("GL Entry").get_field("debit"),
+				currency=frappe.get_cached_value('Company',  company,  "default_currency"))
+
+			diff = flt(stock_bal - account_bal, precision)
+
+			error_reason = _("Stock Value ({0}) and Account Balance ({1}) are out of sync for account {2} and it's linked warehouses as on {3}.").format(
+				stock_bal, account_bal, frappe.bold(account), posting_date)
+			error_resolution = _("Please create an adjustment Journal Entry for amount {0} on {1}")\
+				.format(frappe.bold(diff), frappe.bold(posting_date))
+
+			frappe.msgprint(
+				msg="""{0}<br></br>{1}<br></br>""".format(error_reason, error_resolution),
+				raise_exception=StockValueAndAccountBalanceOutOfSync,
+				title=_('Values Out Of Sync'),
+				primary_action={
+					'label': _('Make Journal Entry'),
+					'client_action': 'erpnext.route_to_adjustment_jv',
+					'args': get_journal_entry(account, stock_adjustment_account, diff)
+				})
+
+def get_stock_accounts(company, voucher_type=None, voucher_no=None):
+	stock_accounts = [d.name for d in frappe.db.get_all("Account", {
+		"account_type": "Stock",
+		"company": company,
+		"is_group": 0
+	})]
+	if voucher_type and voucher_no:
+		if voucher_type == "Journal Entry":
+			stock_accounts = [d.account for d in frappe.db.get_all("Journal Entry Account", {
+				"parent": voucher_no,
+				"account": ["in", stock_accounts]
+			}, "account")]
+
+		else:
+			stock_accounts = [d.account for d in frappe.db.get_all("GL Entry", {
+				"voucher_type": voucher_type,
+				"voucher_no": voucher_no,
+				"account": ["in", stock_accounts]
+			}, "account")]
+
+	return stock_accounts
+
+def get_stock_and_account_balance(account=None, posting_date=None, company=None):
+	if not posting_date: posting_date = nowdate()
+
+	warehouse_account = get_warehouse_account_map(company)
+
+	account_balance = get_balance_on(account, posting_date, in_account_currency=False, ignore_account_permission=True)
+
+	related_warehouses = [wh for wh, wh_details in warehouse_account.items()
+		if wh_details.account == account and not wh_details.is_group]
+
+	total_stock_value = 0.0
+	for warehouse in related_warehouses:
+		value = get_stock_value_on(warehouse, posting_date)
+		total_stock_value += value
+
+	precision = frappe.get_precision("Journal Entry Account", "debit_in_account_currency")
+	return flt(account_balance, precision), flt(total_stock_value, precision), related_warehouses
+
+def get_journal_entry(account, stock_adjustment_account, amount):
+	db_or_cr_warehouse_account =('credit_in_account_currency' if amount < 0 else 'debit_in_account_currency')
+	db_or_cr_stock_adjustment_account = ('debit_in_account_currency' if amount < 0 else 'credit_in_account_currency')
+
+	return {
+		'accounts':[{
+			'account': account,
+			db_or_cr_warehouse_account: abs(amount)
+		}, {
+			'account': stock_adjustment_account,
+			db_or_cr_stock_adjustment_account : abs(amount)
+		}]
+	}
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

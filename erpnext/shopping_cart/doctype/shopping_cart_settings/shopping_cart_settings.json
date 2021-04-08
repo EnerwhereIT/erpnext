@@ -1,4 +1,8 @@
 {
+<<<<<<< HEAD
+=======
+ "actions": [],
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "creation": "2013-06-19 15:57:32",
  "description": "Default settings for Shopping Cart",
  "doctype": "DocType",
@@ -6,11 +10,19 @@
  "engine": "InnoDB",
  "field_order": [
   "enabled",
+<<<<<<< HEAD
+=======
+  "store_page_docs",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "display_settings",
   "show_attachments",
   "show_price",
   "show_stock_availability",
   "enable_variants",
+<<<<<<< HEAD
+=======
+  "column_break_7",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "show_contact_us_button",
   "show_quantity_in_website",
   "show_apply_coupon_code_in_website",
@@ -23,9 +35,16 @@
   "quotation_series",
   "section_break_8",
   "enable_checkout",
+<<<<<<< HEAD
   "payment_success_url",
   "column_break_11",
   "payment_gateway_account"
+=======
+  "save_quotations_as_draft",
+  "column_break_11",
+  "payment_gateway_account",
+  "payment_success_url"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  ],
  "fields": [
   {
@@ -93,6 +112,10 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Company",
+<<<<<<< HEAD
+=======
+   "mandatory_depends_on": "eval: doc.enabled === 1",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "options": "Company",
    "remember_last_selected_value": 1
   },
@@ -101,6 +124,10 @@
    "fieldname": "price_list",
    "fieldtype": "Link",
    "label": "Price List",
+<<<<<<< HEAD
+=======
+   "mandatory_depends_on": "eval: doc.enabled === 1",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "options": "Price List"
   },
   {
@@ -112,12 +139,21 @@
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "label": "Default Customer Group",
+<<<<<<< HEAD
+=======
+   "mandatory_depends_on": "eval: doc.enabled === 1",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "options": "Customer Group"
   },
   {
    "fieldname": "quotation_series",
    "fieldtype": "Select",
+<<<<<<< HEAD
    "label": "Quotation Series"
+=======
+   "label": "Quotation Series",
+   "mandatory_depends_on": "eval: doc.enabled === 1"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "collapsible": 1,
@@ -135,10 +171,18 @@
   },
   {
    "default": "Orders",
+<<<<<<< HEAD
+=======
+   "depends_on": "enable_checkout",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "description": "After payment completion redirect user to selected page.",
    "fieldname": "payment_success_url",
    "fieldtype": "Select",
    "label": "Payment Success Url",
+<<<<<<< HEAD
+=======
+   "mandatory_depends_on": "enable_checkout",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "options": "\nOrders\nInvoices\nMy Account"
   },
   {
@@ -146,22 +190,57 @@
    "fieldtype": "Column Break"
   },
   {
+<<<<<<< HEAD
    "fieldname": "payment_gateway_account",
    "fieldtype": "Link",
    "label": "Payment Gateway Account",
    "options": "Payment Gateway Account"
   },
   {
+=======
+   "depends_on": "enable_checkout",
+   "fieldname": "payment_gateway_account",
+   "fieldtype": "Link",
+   "label": "Payment Gateway Account",
+   "mandatory_depends_on": "enable_checkout",
+   "options": "Payment Gateway Account"
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "default": "0",
    "fieldname": "enable_variants",
    "fieldtype": "Check",
    "label": "Enable Variants"
+<<<<<<< HEAD
+=======
+  },
+  {
+   "default": "0",
+   "depends_on": "eval: doc.enable_checkout == 0",
+   "fieldname": "save_quotations_as_draft",
+   "fieldtype": "Check",
+   "label": "Save Quotations as Draft"
+  },
+  {
+   "depends_on": "doc.enabled",
+   "fieldname": "store_page_docs",
+   "fieldtype": "HTML"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   }
  ],
  "icon": "fa fa-shopping-cart",
  "idx": 1,
  "issingle": 1,
+<<<<<<< HEAD
  "modified": "2021-03-02 18:05:56.721122",
+=======
+ "links": [],
+ "modified": "2021-03-02 17:34:57.642565",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Shopping Cart",
  "name": "Shopping Cart Settings",

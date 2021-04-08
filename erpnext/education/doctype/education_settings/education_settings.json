@@ -107,7 +107,11 @@
  ],
  "issingle": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2020-05-07 19:50:22.430576",
+=======
+ "modified": "2020-05-07 19:18:10.639356",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Education",
  "name": "Education Settings",

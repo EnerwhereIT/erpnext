@@ -7,15 +7,20 @@ import unittest
 import frappe, erpnext
 import frappe.model
 from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
-from frappe.utils import cint, flt, today, nowdate, add_days
+from frappe.utils import cint, flt, today, nowdate, add_days, getdate
 import frappe.defaults
-from erpnext.stock.doctype.purchase_receipt.test_purchase_receipt import set_perpetual_inventory, \
-	test_records as pr_test_records, make_purchase_receipt, get_taxes
+from erpnext.stock.doctype.purchase_receipt.test_purchase_receipt import make_purchase_receipt, get_taxes
 from erpnext.controllers.accounts_controller import get_payment_terms
 from erpnext.exceptions import InvalidCurrency
 from erpnext.stock.doctype.stock_entry.test_stock_entry import get_qty_after_transaction
+<<<<<<< HEAD
 from erpnext.accounts.doctype.account.test_account import get_inventory_account
 from erpnext.projects.doctype.project.test_project import make_project
+=======
+from erpnext.projects.doctype.project.test_project import make_project
+from erpnext.accounts.doctype.account.test_account import get_inventory_account, create_account
+from erpnext.stock.doctype.item.test_item import create_item
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 test_dependencies = ["Item", "Cost Center", "Payment Term", "Payment Terms Template"]
 test_ignore = ["Serial No"]
@@ -32,13 +37,10 @@ class TestPurchaseInvoice(unittest.TestCase):
 
 	def test_gl_entries_without_perpetual_inventory(self):
 		frappe.db.set_value("Company", "_Test Company", "round_off_account", "Round Off - _TC")
-		wrapper = frappe.copy_doc(test_records[0])
-		set_perpetual_inventory(0, wrapper.company)
-		self.assertTrue(not cint(erpnext.is_perpetual_inventory_enabled(wrapper.company)))
-		wrapper.insert()
-		wrapper.submit()
-		wrapper.load_from_db()
-		dl = wrapper
+		pi = frappe.copy_doc(test_records[0])
+		self.assertTrue(not cint(erpnext.is_perpetual_inventory_enabled(pi.company)))
+		pi.insert()
+		pi.submit()
 
 		expected_gl_entries = {
 			"_Test Payable - _TC": [0, 1512.0],
@@ -53,12 +55,16 @@ class TestPurchaseInvoice(unittest.TestCase):
 			"Round Off - _TC": [0, 0.3]
 		}
 		gl_entries = frappe.db.sql("""select account, debit, credit from `tabGL Entry`
-			where voucher_type = 'Purchase Invoice' and voucher_no = %s""", dl.name, as_dict=1)
+			where voucher_type = 'Purchase Invoice' and voucher_no = %s""", pi.name, as_dict=1)
 		for d in gl_entries:
 			self.assertEqual([d.debit, d.credit], expected_gl_entries.get(d.account))
 
 	def test_gl_entries_with_perpetual_inventory(self):
-		pi = make_purchase_invoice(company="_Test Company with perpetual inventory", supplier_warehouse="Work In Progress - TCP1", warehouse= "Stores - TCP1", cost_center = "Main - TCP1", expense_account ="_Test Account Cost for Goods Sold - TCP1", get_taxes_and_charges=True, qty=10)
+		pi = make_purchase_invoice(company="_Test Company with perpetual inventory",
+			warehouse= "Stores - TCP1", cost_center = "Main - TCP1",
+			expense_account ="_Test Account Cost for Goods Sold - TCP1",
+			get_taxes_and_charges=True, qty=10)
+
 		self.assertTrue(cint(erpnext.is_perpetual_inventory_enabled(pi.company)), 1)
 
 		self.check_gle_for_pi(pi.name)
@@ -197,8 +203,6 @@ class TestPurchaseInvoice(unittest.TestCase):
 
 		pr = make_purchase_receipt(company="_Test Company with perpetual inventory", supplier_warehouse="Work In Progress - TCP1", warehouse= "Stores - TCP1", cost_center = "Main - TCP1", get_taxes_and_charges=True,)
 
-		self.assertTrue(cint(erpnext.is_perpetual_inventory_enabled(pr.company)), 1)
-
 		pi = make_purchase_invoice(company="_Test Company with perpetual inventory", supplier_warehouse="Work In Progress - TCP1", warehouse= "Stores - TCP1", cost_center = "Main - TCP1", expense_account ="_Test Account Cost for Goods Sold - TCP1", get_taxes_and_charges=True, qty=10,do_not_save= "True")
 
 		for d in pi.items:
@@ -246,6 +250,7 @@ class TestPurchaseInvoice(unittest.TestCase):
 
 		self.assertRaises(frappe.CannotChangeConstantError, pi.save)
 
+<<<<<<< HEAD
 	def test_gl_entries_with_aia_for_non_stock_items(self):
 		pi = frappe.copy_doc(test_records[1])
 		set_perpetual_inventory(1, pi.company)
@@ -257,6 +262,13 @@ class TestPurchaseInvoice(unittest.TestCase):
 		pi.insert()
 		pi.submit()
 		pi.load_from_db()
+=======
+	def test_gl_entries_for_non_stock_items_with_perpetual_inventory(self):
+		pi = make_purchase_invoice(item_code = "_Test Non Stock Item",
+			company = "_Test Company with perpetual inventory", warehouse= "Stores - TCP1",
+			cost_center = "Main - TCP1", expense_account ="_Test Account Cost for Goods Sold - TCP1")
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		self.assertTrue(pi.status, "Unpaid")
 
 		gl_entries = frappe.db.sql("""select account, debit, credit
@@ -264,17 +276,15 @@ class TestPurchaseInvoice(unittest.TestCase):
 			order by account asc""", pi.name, as_dict=1)
 		self.assertTrue(gl_entries)
 
-		expected_values = sorted([
-			["_Test Payable - _TC", 0, 620],
-			["_Test Account Cost for Goods Sold - _TC", 500.0, 0],
-			["_Test Account VAT - _TC", 120.0, 0],
-		])
+		expected_values = [
+			["_Test Account Cost for Goods Sold - TCP1", 250.0, 0],
+			["Creditors - TCP1", 0, 250]
+		]
 
 		for i, gle in enumerate(gl_entries):
 			self.assertEqual(expected_values[i][0], gle.account)
 			self.assertEqual(expected_values[i][1], gle.debit)
 			self.assertEqual(expected_values[i][2], gle.credit)
-		set_perpetual_inventory(0, pi.company)
 
 	def test_purchase_invoice_calculation(self):
 		pi = frappe.copy_doc(test_records[0])
@@ -435,33 +445,43 @@ class TestPurchaseInvoice(unittest.TestCase):
 		)
 
 	def test_total_purchase_cost_for_project(self):
+<<<<<<< HEAD
 		make_project({'project_name':'_Test Project'})
+=======
+		if not frappe.db.exists("Project", {"project_name": "_Test Project for Purchase"}):
+			project = make_project({'project_name':'_Test Project for Purchase'})
+		else:
+			project = frappe.get_doc("Project", {"project_name": "_Test Project for Purchase"})
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 		existing_purchase_cost = frappe.db.sql("""select sum(base_net_amount)
-			from `tabPurchase Invoice Item` where project = '_Test Project' and docstatus=1""")
+			from `tabPurchase Invoice Item`
+			where project = '{0}'
+			and docstatus=1""".format(project.name))
 		existing_purchase_cost = existing_purchase_cost and existing_purchase_cost[0][0] or 0
 
-		pi = make_purchase_invoice(currency="USD", conversion_rate=60, project="_Test Project")
-		self.assertEqual(frappe.db.get_value("Project", "_Test Project", "total_purchase_cost"),
+		pi = make_purchase_invoice(currency="USD", conversion_rate=60, project=project.name)
+		self.assertEqual(frappe.db.get_value("Project", project.name, "total_purchase_cost"),
 			existing_purchase_cost + 15000)
 
-		pi1 = make_purchase_invoice(qty=10, project="_Test Project")
-		self.assertEqual(frappe.db.get_value("Project", "_Test Project", "total_purchase_cost"),
+		pi1 = make_purchase_invoice(qty=10, project=project.name)
+		self.assertEqual(frappe.db.get_value("Project", project.name, "total_purchase_cost"),
 			existing_purchase_cost + 15500)
 
 		pi1.cancel()
-		self.assertEqual(frappe.db.get_value("Project", "_Test Project", "total_purchase_cost"),
+		self.assertEqual(frappe.db.get_value("Project", project.name, "total_purchase_cost"),
 			existing_purchase_cost + 15000)
 
 		pi.cancel()
-		self.assertEqual(frappe.db.get_value("Project", "_Test Project", "total_purchase_cost"), existing_purchase_cost)
+		self.assertEqual(frappe.db.get_value("Project", project.name, "total_purchase_cost"), existing_purchase_cost)
 
-	def test_return_purchase_invoice(self):
-		set_perpetual_inventory()
+	def test_return_purchase_invoice_with_perpetual_inventory(self):
+		pi = make_purchase_invoice(company = "_Test Company with perpetual inventory", warehouse= "Stores - TCP1",
+			cost_center = "Main - TCP1", expense_account ="_Test Account Cost for Goods Sold - TCP1")
 
-		pi = make_purchase_invoice()
-
-		return_pi = make_purchase_invoice(is_return=1, return_against=pi.name, qty=-2)
+		return_pi = make_purchase_invoice(is_return=1, return_against=pi.name, qty=-2,
+			company = "_Test Company with perpetual inventory", warehouse= "Stores - TCP1",
+			cost_center = "Main - TCP1", expense_account ="_Test Account Cost for Goods Sold - TCP1")
 
 
 		# check gl entries for return
@@ -472,19 +492,15 @@ class TestPurchaseInvoice(unittest.TestCase):
 		self.assertTrue(gl_entries)
 
 		expected_values = {
-			"Creditors - _TC": [100.0, 0.0],
-			"Stock Received But Not Billed - _TC": [0.0, 100.0],
+			"Creditors - TCP1": [100.0, 0.0],
+			"Stock Received But Not Billed - TCP1": [0.0, 100.0],
 		}
 
 		for gle in gl_entries:
 			self.assertEqual(expected_values[gle.account][0], gle.debit)
 			self.assertEqual(expected_values[gle.account][1], gle.credit)
 
-		set_perpetual_inventory(0)
-
 	def test_multi_currency_gle(self):
-		set_perpetual_inventory(0)
-
 		pi = make_purchase_invoice(supplier="_Test Supplier USD", credit_to="_Test Payable USD - _TC",
 			currency="USD", conversion_rate=50)
 
@@ -639,10 +655,9 @@ class TestPurchaseInvoice(unittest.TestCase):
 		self.assertEqual(len(pi.get("supplied_items")), 2)
 
 		rm_supp_cost = sum([d.amount for d in pi.get("supplied_items")])
-		self.assertEqual(pi.get("items")[0].rm_supp_cost, flt(rm_supp_cost, 2))
+		self.assertEqual(flt(pi.get("items")[0].rm_supp_cost, 2), flt(rm_supp_cost, 2))
 
 	def test_rejected_serial_no(self):
-		set_perpetual_inventory(0)
 		pi = make_purchase_invoice(item_code="_Test Serialized Item With Series", received_qty=2, qty=1,
 			rejected_qty=1, rate=500, update_stock=1,
 			rejected_warehouse = "_Test Rejected Warehouse - _TC")
@@ -873,17 +888,29 @@ class TestPurchaseInvoice(unittest.TestCase):
 		})
 
 		pi = make_purchase_invoice(credit_to="Creditors - _TC" ,do_not_save=1)
+<<<<<<< HEAD
 		pi.items[0].project = item_project.project_name
 		pi.project = project.project_name
+=======
+		pi.items[0].project = item_project.name
+		pi.project = project.name
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 		pi.submit()
 
 		expected_values = {
 			"Creditors - _TC": {
+<<<<<<< HEAD
 				"project": project.project_name
 			},
 			"_Test Account Cost for Goods Sold - _TC": {
 				"project": item_project.project_name
+=======
+				"project": project.name
+			},
+			"_Test Account Cost for Goods Sold - _TC": {
+				"project": item_project.name
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			}
 		}
 
@@ -896,6 +923,71 @@ class TestPurchaseInvoice(unittest.TestCase):
 
 		for gle in gl_entries:
 			self.assertEqual(expected_values[gle.account]["project"], gle.project)
+<<<<<<< HEAD
+=======
+
+	def test_deferred_expense_via_journal_entry(self):
+		deferred_account = create_account(account_name="Deferred Expense",
+			parent_account="Current Assets - _TC", company="_Test Company")
+
+		acc_settings = frappe.get_doc('Accounts Settings', 'Accounts Settings')
+		acc_settings.book_deferred_entries_via_journal_entry = 1
+		acc_settings.submit_journal_entries = 1
+		acc_settings.save()
+
+		item = create_item("_Test Item for Deferred Accounting")
+		item.enable_deferred_expense = 1
+		item.deferred_expense_account = deferred_account
+		item.save()
+
+		pi = make_purchase_invoice(item=item.name, qty=1, rate=100, do_not_save=True)
+		pi.set_posting_time = 1
+		pi.posting_date = '2019-03-15'
+		pi.items[0].enable_deferred_expense = 1
+		pi.items[0].service_start_date = "2019-01-10"
+		pi.items[0].service_end_date = "2019-03-15"
+		pi.items[0].deferred_expense_account = deferred_account
+		pi.save()
+		pi.submit()
+
+		pda1 = frappe.get_doc(dict(
+			doctype='Process Deferred Accounting',
+			posting_date=nowdate(),
+			start_date="2019-01-01",
+			end_date="2019-03-31",
+			type="Expense",
+			company="_Test Company"
+		))
+
+		pda1.insert()
+		pda1.submit()
+
+		expected_gle = [
+			["_Test Account Cost for Goods Sold - _TC", 0.0, 33.85, "2019-01-31"],
+			[deferred_account, 33.85, 0.0, "2019-01-31"],
+			["_Test Account Cost for Goods Sold - _TC", 0.0, 43.08, "2019-02-28"],
+			[deferred_account, 43.08, 0.0, "2019-02-28"],
+			["_Test Account Cost for Goods Sold - _TC", 0.0, 23.07, "2019-03-15"],
+			[deferred_account, 23.07, 0.0, "2019-03-15"]
+		]
+
+		gl_entries = gl_entries = frappe.db.sql("""select account, debit, credit, posting_date
+			from `tabGL Entry`
+			where voucher_type='Journal Entry' and voucher_detail_no=%s and posting_date <= %s
+			order by posting_date asc, account asc""", (pi.items[0].name, pi.posting_date), as_dict=1)
+
+		for i, gle in enumerate(gl_entries):
+			self.assertEqual(expected_gle[i][0], gle.account)
+			self.assertEqual(expected_gle[i][1], gle.credit)
+			self.assertEqual(expected_gle[i][2], gle.debit)
+			self.assertEqual(getdate(expected_gle[i][3]), gle.posting_date)
+
+		acc_settings = frappe.get_doc('Accounts Settings', 'Accounts Settings')
+		acc_settings.book_deferred_entries_via_journal_entry = 0
+		acc_settings.submit_journal_entriessubmit_journal_entries = 0
+		acc_settings.save()
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 def unlink_payment_on_cancel_of_invoice(enable=1):
 	accounts_settings = frappe.get_doc("Accounts Settings")
@@ -935,7 +1027,7 @@ def make_purchase_invoice(**args):
 		'expense_account': args.expense_account or '_Test Account Cost for Goods Sold - _TC',
 		"conversion_factor": 1.0,
 		"serial_no": args.serial_no,
-		"stock_uom": "_Test UOM",
+		"stock_uom": args.uom or "_Test UOM",
 		"cost_center": args.cost_center or "_Test Cost Center - _TC",
 		"project": args.project,
 		"rejected_warehouse": args.rejected_warehouse or "",
@@ -977,7 +1069,8 @@ def make_purchase_invoice_against_cost_center(**args):
 	pi.is_return = args.is_return
 	pi.credit_to = args.return_against or "Creditors - _TC"
 	pi.is_subcontracted = args.is_subcontracted or "No"
-	pi.supplier_warehouse = "_Test Warehouse 1 - _TC"
+	if args.supplier_warehouse:
+		pi.supplier_warehouse = "_Test Warehouse 1 - _TC"
 
 	pi.append("items", {
 		"item_code": args.item or args.item_code or "_Test Item",

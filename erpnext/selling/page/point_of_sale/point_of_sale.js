@@ -1,5 +1,4 @@
-/* global Clusterize */
-frappe.provide('erpnext.pos');
+frappe.provide('erpnext.PointOfSale');
 
 frappe.pages['point-of-sale'].on_page_load = function(wrapper) {
 	frappe.ui.make_app_page({
@@ -8,23 +7,19 @@ frappe.pages['point-of-sale'].on_page_load = function(wrapper) {
 		single_column: true
 	});
 
-	frappe.db.get_value('POS Settings', {name: 'POS Settings'}, 'is_online', (r) => {
-		if (r && !cint(r.use_pos_in_offline_mode)) {
-			// online
-			wrapper.pos = new erpnext.pos.PointOfSale(wrapper);
-			window.cur_pos = wrapper.pos;
-		} else {
-			// offline
-			frappe.flags.is_offline = true;
-			frappe.set_route('pos');
-		}
+	frappe.require('assets/js/point-of-sale.min.js', function() {
+		wrapper.pos = new erpnext.PointOfSale.Controller(wrapper);
+		window.cur_pos = wrapper.pos;
 	});
 };
 
 frappe.pages['point-of-sale'].refresh = function(wrapper) {
-	if (wrapper.pos) {
-		wrapper.pos.make_new_invoice();
+	if (document.scannerDetectionData) {
+		onScan.detachFrom(document);
+		wrapper.pos.wrapper.html("");
+		wrapper.pos.check_opening_entry();
 	}
+<<<<<<< HEAD
 
 	if (frappe.flags.is_offline) {
 		frappe.set_route('pos');
@@ -1927,3 +1922,6 @@ class Payment {
 	}
 
 }
+=======
+};
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

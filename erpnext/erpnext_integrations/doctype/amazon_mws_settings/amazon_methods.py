@@ -117,7 +117,11 @@ def call_mws_method(mws_method, *args, **kwargs):
 			return response
 		except Exception as e:
 			delay = math.pow(4, x) * 125
+<<<<<<< HEAD
 			frappe.log_error(message=e, title="Method {} failed".format(mws_method.__name__))
+=======
+			frappe.log_error(message=e, title=f'Method "{mws_method.__name__}" failed')
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			time.sleep(delay)
 			continue
 

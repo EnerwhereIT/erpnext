@@ -26,11 +26,11 @@ class TestPlaidSettings(unittest.TestCase):
 		for ba in frappe.get_all("Bank Account"):
 			frappe.get_doc("Bank Account", ba.name).delete()
 
-		for at in frappe.get_all("Account Type"):
-			frappe.get_doc("Account Type", at.name).delete()
+		for at in frappe.get_all("Bank Account Type"):
+			frappe.get_doc("Bank Account Type", at.name).delete()
 
-		for ast in frappe.get_all("Account Subtype"):
-			frappe.get_doc("Account Subtype", ast.name).delete()
+		for ast in frappe.get_all("Bank Account Subtype"):
+			frappe.get_doc("Bank Account Subtype", ast.name).delete()
 
 	def test_plaid_disabled(self):
 		frappe.db.set_value("Plaid Settings", None, "enabled", 0)
@@ -38,11 +38,11 @@ class TestPlaidSettings(unittest.TestCase):
 
 	def test_add_account_type(self):
 		add_account_type("brokerage")
-		self.assertEqual(frappe.get_doc("Account Type", "brokerage").name, "brokerage")
+		self.assertEqual(frappe.get_doc("Bank Account Type", "brokerage").name, "brokerage")
 
 	def test_add_account_subtype(self):
 		add_account_subtype("loan")
-		self.assertEqual(frappe.get_doc("Account Subtype", "loan").name, "loan")
+		self.assertEqual(frappe.get_doc("Bank Account Subtype", "loan").name, "loan")
 
 	def test_default_bank_account(self):
 		if not frappe.db.exists("Bank", "Citi"):

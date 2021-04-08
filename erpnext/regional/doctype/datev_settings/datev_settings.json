@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "autoname": "field:client",
  "creation": "2019-08-13 23:56:34.259906",
  "doctype": "DocType",
@@ -6,13 +7,19 @@
  "engine": "InnoDB",
  "field_order": [
   "client",
+<<<<<<< HEAD
   "account_number_length",
   "column_break_2",
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "client_number",
-  "section_break_4",
+  "column_break_2",
+  "consultant_number",
   "consultant",
+  "section_break_4",
+  "account_number_length",
   "column_break_6",
-  "consultant_number"
+  "temporary_against_account_number"
  ],
  "fields": [
   {
@@ -65,9 +72,23 @@
    "fieldtype": "Int",
    "label": "Account Number Length",
    "reqd": 1
+<<<<<<< HEAD
   }
  ],
  "modified": "2020-10-03 16:52:35.903867",
+=======
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "temporary_against_account_number",
+   "fieldtype": "Data",
+   "label": "Temporary Against Account Number",
+   "reqd": 1
+  }
+ ],
+ "links": [],
+ "modified": "2020-11-19 19:00:09.088816",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Regional",
  "name": "DATEV Settings",

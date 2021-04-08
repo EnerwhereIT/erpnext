@@ -36,6 +36,12 @@ def update_last_purchase_rate(doc, is_submit):
 
 		# update last purchsae rate
 		frappe.db.set_value('Item', d.item_code, 'last_purchase_rate', flt(last_purchase_rate))
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 def validate_for_items(doc):
 	items = []

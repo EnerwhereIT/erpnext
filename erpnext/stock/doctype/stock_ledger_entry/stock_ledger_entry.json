@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "allow_copy": 1,
  "autoname": "MAT-SLE-.YYYY.-.#####",
  "creation": "2013-01-29 19:25:42",
@@ -7,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "item_code",
+<<<<<<< HEAD
   "serial_no",
   "batch_no",
   "warehouse",
@@ -20,13 +22,41 @@
   "outgoing_rate",
   "stock_uom",
   "qty_after_transaction",
+=======
+  "warehouse",
+  "posting_date",
+  "posting_time",
+  "column_break_6",
+  "voucher_type",
+  "voucher_no",
+  "voucher_detail_no",
+  "dependant_sle_voucher_detail_no",
+  "recalculate_rate",
+  "section_break_11",
+  "actual_qty",
+  "qty_after_transaction",
+  "incoming_rate",
+  "outgoing_rate",
+  "column_break_17",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "valuation_rate",
   "stock_value",
   "stock_value_difference",
   "stock_queue",
+<<<<<<< HEAD
   "project",
   "company",
   "fiscal_year",
+=======
+  "section_break_21",
+  "company",
+  "stock_uom",
+  "project",
+  "batch_no",
+  "column_break_26",
+  "fiscal_year",
+  "serial_no",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "is_cancelled",
   "to_rename"
  ],
@@ -49,7 +79,10 @@
   {
    "fieldname": "serial_no",
    "fieldtype": "Long Text",
+<<<<<<< HEAD
    "in_list_view": 1,
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "label": "Serial No",
    "print_width": "100px",
    "read_only": 1,
@@ -58,7 +91,10 @@
   {
    "fieldname": "batch_no",
    "fieldtype": "Data",
+<<<<<<< HEAD
    "in_list_view": 1,
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "label": "Batch No",
    "oldfieldname": "batch_no",
    "oldfieldtype": "Data",
@@ -118,6 +154,10 @@
    "fieldname": "voucher_no",
    "fieldtype": "Dynamic Link",
    "in_filter": 1,
+<<<<<<< HEAD
+=======
+   "in_list_view": 1,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "in_standard_filter": 1,
    "label": "Voucher No",
    "oldfieldname": "voucher_no",
@@ -141,6 +181,10 @@
    "fieldname": "actual_qty",
    "fieldtype": "Float",
    "in_filter": 1,
+<<<<<<< HEAD
+=======
+   "in_list_view": 1,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "label": "Actual Quantity",
    "oldfieldname": "actual_qty",
    "oldfieldtype": "Currency",
@@ -151,6 +195,10 @@
   {
    "fieldname": "incoming_rate",
    "fieldtype": "Currency",
+<<<<<<< HEAD
+=======
+   "in_list_view": 1,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "label": "Incoming Rate",
    "oldfieldname": "incoming_rate",
    "oldfieldtype": "Currency",
@@ -216,13 +264,20 @@
   {
    "fieldname": "stock_queue",
    "fieldtype": "Text",
+<<<<<<< HEAD
    "hidden": 1,
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "label": "Stock Queue (FIFO)",
    "oldfieldname": "fcfs_stack",
    "oldfieldtype": "Text",
    "print_hide": 1,
+<<<<<<< HEAD
    "read_only": 1,
    "report_hide": 1
+=======
+   "read_only": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "fieldname": "project",
@@ -255,11 +310,18 @@
    "width": "150px"
   },
   {
+<<<<<<< HEAD
    "fieldname": "is_cancelled",
    "fieldtype": "Select",
    "hidden": 1,
    "label": "Is Cancelled",
    "options": "\nNo\nYes",
+=======
+   "default": "0",
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Is Cancelled",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "report_hide": 1
   },
   {
@@ -269,13 +331,55 @@
    "hidden": 1,
    "label": "To Rename",
    "search_index": 1
+<<<<<<< HEAD
+=======
+  },
+  {
+   "fieldname": "dependant_sle_voucher_detail_no",
+   "fieldtype": "Data",
+   "label": "Dependant SLE Voucher Detail No"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_21",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_26",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "recalculate_rate",
+   "fieldtype": "Check",
+   "label": "Recalculate Incoming/Outgoing Rate",
+   "no_copy": 1,
+   "read_only": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   }
  ],
  "hide_toolbar": 1,
  "icon": "fa fa-list",
  "idx": 1,
  "in_create": 1,
+<<<<<<< HEAD
  "modified": "2020-02-25 22:53:33.504681",
+=======
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2020-09-07 11:10:35.318872",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Stock Ledger Entry",

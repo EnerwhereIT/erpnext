@@ -26,14 +26,22 @@ async function get_global_variables() {
 function setup_timezone_selector() {
     let timezones_element = document.getElementById('appointment-timezone');
     let local_timezone = moment.tz.guess()
+<<<<<<< HEAD:erpnext/www/book_appointment/index.js
     window.timezones.forEach((timezone) => {
+=======
+    window.timezones.forEach(timezone => {
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a:erpnext/www/book_appointment/index.js
         let opt = document.createElement('option');
         opt.value = timezone;
         if (timezone == local_timezone) {
             opt.selected = true;
         }
         opt.innerHTML = timezone;
+<<<<<<< HEAD:erpnext/www/book_appointment/index.js
         timezones_element.appendChild(opt);
+=======
+        timezones_element.appendChild(opt)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a:erpnext/www/book_appointment/index.js
     });
 }
 
@@ -181,10 +189,32 @@ function setup_details_page() {
     navigate_to_page(2)
     let date_container = document.getElementsByClassName('date-span')[0];
     let time_container = document.getElementsByClassName('time-span')[0];
+    setup_search_params();
     date_container.innerHTML = moment(window.selected_date).format("MMM Do YYYY");
     time_container.innerHTML = moment(window.selected_time, "HH:mm:ss").format("LT");
 }
 
+function setup_search_params() {
+    let search_params = new URLSearchParams(window.location.search);
+    let customer_name = search_params.get("name")
+    let customer_email = search_params.get("email")
+    let detail = search_params.get("details")
+    if (customer_name) {
+        let name_input = document.getElementById("customer_name");
+        name_input.value = customer_name;
+        name_input.disabled = true;
+    }
+    if(customer_email) {
+        let email_input = document.getElementById("customer_email");
+        email_input.value = customer_email;
+        email_input.disabled = true;
+    }
+    if(detail) {
+        let detail_input = document.getElementById("customer_notes");
+        detail_input.value = detail;
+        detail_input.disabled = true;
+    }
+}
 async function submit() {
     let button = document.getElementById('submit-button');
     button.disabled = true;

@@ -78,7 +78,7 @@ class Gstr1Report(object):
 				place_of_supply = invoice_details.get("place_of_supply")
 				ecommerce_gstin =  invoice_details.get("ecommerce_gstin")
 
-				b2cs_output.setdefault((rate, place_of_supply, ecommerce_gstin),{
+				b2cs_output.setdefault((rate, place_of_supply, ecommerce_gstin, inv),{
 					"place_of_supply": "",
 					"ecommerce_gstin": "",
 					"rate": "",
@@ -90,7 +90,7 @@ class Gstr1Report(object):
 					"invoice_value": invoice_details.get("base_grand_total"),
 				})
 
-				row = b2cs_output.get((rate, place_of_supply, ecommerce_gstin))
+				row = b2cs_output.get((rate, place_of_supply, ecommerce_gstin, inv))
 				row["place_of_supply"] = place_of_supply
 				row["ecommerce_gstin"] = ecommerce_gstin
 				row["rate"] = rate
@@ -275,7 +275,11 @@ class Gstr1Report(object):
 
 		# Build itemised tax for export invoices where tax table is blank
 		for invoice, items in iteritems(self.invoice_items):
+<<<<<<< HEAD
 			if invoice not in self.items_based_on_tax_rate  and invoice not in unidentified_gst_accounts_invoice \
+=======
+			if invoice not in self.items_based_on_tax_rate and invoice not in unidentified_gst_accounts_invoice \
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 				and frappe.db.get_value(self.doctype, invoice, "export_type") == "Without Payment of Tax":
 					self.items_based_on_tax_rate.setdefault(invoice, {}).setdefault(0, items.keys())
 
@@ -753,9 +757,15 @@ def get_company_gstin_number(company):
 	if gstin:
 		return gstin[0]["gstin"]
 	else:
+<<<<<<< HEAD
 		frappe.throw(_("Please set valid GSTIN No. in Company Address for company {0}".format(
 			frappe.bold(company)
 		)))
+=======
+		frappe.throw(_("Please set valid GSTIN No. in Company Address for company {0}").format(
+			frappe.bold(company)
+		))
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 @frappe.whitelist()
 def download_json_file():

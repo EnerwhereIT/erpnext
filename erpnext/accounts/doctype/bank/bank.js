@@ -9,6 +9,21 @@ frappe.ui.form.on('Bank', {
 	refresh: function(frm) {
 		add_fields_to_mapping_table(frm);
 
+<<<<<<< HEAD
+=======
+		frappe.dynamic_link = { doc: frm.doc, fieldname: 'name', doctype: 'Bank' };
+
+		frm.toggle_display(['address_html','contact_html'], !frm.doc.__islocal);
+
+		if (frm.doc.__islocal) {
+			frm.set_df_property('address_and_contact', 'hidden', 1);
+			frappe.contacts.clear_address_and_contact(frm);
+		}
+		else {
+			frm.set_df_property('address_and_contact', 'hidden', 0);
+			frappe.contacts.render_address_and_contact(frm);
+		}
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		if (frm.doc.plaid_access_token) {
 			frm.add_custom_button(__('Refresh Plaid Link'), () => {
 				new erpnext.integrations.refreshPlaidLink(frm.doc.plaid_access_token);
@@ -110,4 +125,7 @@ erpnext.integrations.refreshPlaidLink = class refreshPlaidLink {
 		frappe.show_alert({ message: __('Plaid Link Updated'), indicator: 'green' });
 	}
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

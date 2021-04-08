@@ -15,7 +15,10 @@ def execute(filters=None):
 
 def _execute(filters=None, additional_table_columns=None, additional_query_columns=None):
 	if not filters: filters = {}
+<<<<<<< HEAD
 	filters.update({"from_date": filters.get("date_range") and filters.get("date_range")[0], "to_date": filters.get("date_range") and filters.get("date_range")[1]})
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	columns = get_columns(additional_table_columns, filters)
 
 	company_currency = frappe.get_cached_value('Company',  filters.get('company'),  'default_currency')
@@ -77,7 +80,11 @@ def _execute(filters=None, additional_table_columns=None, additional_query_colum
 			'company': d.company,
 			'sales_order': d.sales_order,
 			'delivery_note': d.delivery_note,
+<<<<<<< HEAD
 			'income_account': d.income_account,
+=======
+			'income_account': d.unrealized_profit_loss_account or d.income_account,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			'cost_center': d.cost_center,
 			'stock_qty': d.stock_qty,
 			'stock_uom': d.stock_uom
@@ -231,7 +238,11 @@ def get_columns(additional_table_columns, filters):
 		}
 	]
 
+<<<<<<< HEAD
 	if filters.get('group_by') != 'Terriotory':
+=======
+	if filters.get('group_by') != 'Territory':
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		columns.extend([
 			{
 				'label': _('Territory'),
@@ -312,6 +323,7 @@ def get_columns(additional_table_columns, filters):
 			'fieldtype': 'Currency',
 			'options': 'currency',
 			'width': 100
+<<<<<<< HEAD
 		},
 		{
 			'fieldname': 'currency',
@@ -319,6 +331,8 @@ def get_columns(additional_table_columns, filters):
 			'fieldtype': 'Currency',
 			'width': 80,
 			'hidden': 1
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		}
 	]
 
@@ -387,6 +401,7 @@ def get_items(filters, additional_query_columns):
 		select
 			`tabSales Invoice Item`.name, `tabSales Invoice Item`.parent,
 			`tabSales Invoice`.posting_date, `tabSales Invoice`.debit_to,
+			`tabSales Invoice`.unrealized_profit_loss_account,
 			`tabSales Invoice`.project, `tabSales Invoice`.customer, `tabSales Invoice`.remarks,
 			`tabSales Invoice`.territory, `tabSales Invoice`.company, `tabSales Invoice`.base_net_total,
 			`tabSales Invoice Item`.item_code, `tabSales Invoice Item`.description,
@@ -544,6 +559,16 @@ def get_tax_accounts(item_list, columns, company_currency,
 			'fieldtype': 'Currency',
 			'options': 'currency',
 			'width': 100
+<<<<<<< HEAD
+=======
+		},
+		{
+			'fieldname': 'currency',
+			'label': _('Currency'),
+			'fieldtype': 'Currency',
+			'width': 80,
+			'hidden': 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		}
 	]
 

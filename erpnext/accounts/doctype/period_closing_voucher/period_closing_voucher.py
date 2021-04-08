@@ -8,7 +8,11 @@ from frappe import _
 from erpnext.accounts.utils import get_account_currency
 from erpnext.controllers.accounts_controller import AccountsController
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import (get_accounting_dimensions,
+<<<<<<< HEAD
 	get_dimension_filters)
+=======
+	get_dimensions)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 class PeriodClosingVoucher(AccountsController):
 	def validate(self):
@@ -19,8 +23,9 @@ class PeriodClosingVoucher(AccountsController):
 		self.make_gl_entries()
 
 	def on_cancel(self):
-		frappe.db.sql("""delete from `tabGL Entry`
-			where voucher_type = 'Period Closing Voucher' and voucher_no=%s""", self.name)
+		self.ignore_linked_doctypes = ('GL Entry', 'Stock Ledger Entry')
+		from erpnext.accounts.general_ledger import make_reverse_gl_entries
+		make_reverse_gl_entries(voucher_type="Period Closing Voucher", voucher_no=self.name)
 
 	def validate_account_head(self):
 		closing_account_type = frappe.db.get_value("Account", self.closing_account_head, "root_type")
@@ -57,7 +62,11 @@ class PeriodClosingVoucher(AccountsController):
 		for dimension in accounting_dimensions:
 			dimension_fields.append('t1.{0}'.format(dimension))
 
+<<<<<<< HEAD
 		dimension_filters, default_dimensions = get_dimension_filters()
+=======
+		dimension_filters, default_dimensions = get_dimensions()
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 		pl_accounts = self.get_pl_balances(dimension_fields)
 

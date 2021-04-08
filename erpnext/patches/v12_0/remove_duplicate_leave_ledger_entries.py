@@ -43,4 +43,8 @@ def delete_duplicate_ledger_entries(duplicate_records_list):
 				AND is_carry_forward = %s
 				AND from_date = %s
 				AND to_date = %s
+<<<<<<< HEAD
 		''', tuple(d))
+=======
+		''', tuple(d))
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

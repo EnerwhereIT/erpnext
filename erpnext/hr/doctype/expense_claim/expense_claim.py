@@ -4,7 +4,7 @@
 from __future__ import unicode_literals
 import frappe, erpnext
 from frappe import _
-from frappe.utils import get_fullname, flt, cstr
+from frappe.utils import get_fullname, flt, cstr, get_link_to_form
 from frappe.model.document import Document
 from erpnext.hr.utils import set_employee_name
 from erpnext.accounts.party import get_party_account
@@ -45,7 +45,11 @@ class ExpenseClaim(AccountsController):
 		paid_amount = flt(self.total_amount_reimbursed) + flt(self.total_advance_amount)
 		precision = self.precision("grand_total")
 		if (self.is_paid or (flt(self.total_sanctioned_amount) > 0
+<<<<<<< HEAD
 			and flt(flt(self.total_sanctioned_amount) + flt(self.total_taxes_and_charges), precision) ==  flt(paid_amount, precision))) \
+=======
+			and flt(self.grand_total, precision) ==  flt(paid_amount, precision))) \
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			and self.docstatus == 1 and self.approval_status == 'Approved':
 				self.status = "Paid"
 		elif flt(self.grand_total) > 0 and self.docstatus == 1 and self.approval_status == 'Approved':
@@ -76,6 +80,7 @@ class ExpenseClaim(AccountsController):
 
 	def on_cancel(self):
 		self.update_task_and_project()
+		self.ignore_linked_doctypes = ('GL Entry', 'Stock Ledger Entry')
 		if self.payable_account:
 			self.make_gl_entries(cancel=True)
 
@@ -191,8 +196,10 @@ class ExpenseClaim(AccountsController):
 			)
 
 	def validate_account_details(self):
-		if not self.cost_center:
-			frappe.throw(_("Cost center is required to book an expense claim"))
+		for data in self.expenses:
+			if not data.cost_center:
+				frappe.throw(_("Row {0}: {1} is required in the expenses table to book an expense claim.")
+					.format(data.idx, frappe.bold("Cost Center")))
 
 		if self.is_paid:
 			if not self.mode_of_payment:
@@ -259,10 +266,17 @@ class ExpenseClaim(AccountsController):
 			if not expense.default_account or not validate:
 				expense.default_account = get_expense_claim_account(expense.expense_type, self.company)["account"]
 
-def update_reimbursed_amount(doc):
-	amt = frappe.db.sql("""select ifnull(sum(debit_in_account_currency), 0) as amt
+def update_reimbursed_amount(doc, jv=None):
+
+	condition = ""
+
+	if jv:
+		condition += "and voucher_no = '{0}'".format(jv)
+
+	amt = frappe.db.sql("""select ifnull(sum(debit_in_account_currency), 0) - ifnull(sum(credit_in_account_currency), 0)as amt
 		from `tabGL Entry` where against_voucher_type = 'Expense Claim' and against_voucher = %s
-		and party = %s """, (doc.name, doc.employee) ,as_dict=1)[0].amt
+		and party = %s {condition}""".format(condition=condition), #nosec
+		(doc.name, doc.employee) ,as_dict=1)[0].amt
 
 	doc.total_amount_reimbursed = amt
 	frappe.db.set_value("Expense Claim", doc.name , "total_amount_reimbursed", amt)
@@ -311,12 +325,22 @@ def make_bank_entry(dt, dn):
 	return je.as_dict()
 
 @frappe.whitelist()
+def get_expense_claim_account_and_cost_center(expense_claim_type, company):
+	data = get_expense_claim_account(expense_claim_type, company)
+	cost_center = erpnext.get_default_cost_center(company)
+
+	return {
+		"account": data.get("account"),
+		"cost_center": cost_center
+	}
+
+@frappe.whitelist()
 def get_expense_claim_account(expense_claim_type, company):
 	account = frappe.db.get_value("Expense Claim Account",
 		{"parent": expense_claim_type, "company": company}, "default_account")
 	if not account:
-		frappe.throw(_("Please set default account in Expense Claim Type {0}")
-			.format(expense_claim_type))
+		frappe.throw(_("Set the default account for the {0} {1}")
+			.format(frappe.bold("Expense Claim Type"), get_link_to_form("Expense Claim Type", expense_claim_type)))
 
 	return {
 		"account": account

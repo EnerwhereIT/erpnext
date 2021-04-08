@@ -9,15 +9,29 @@
  "field_order": [
   "department_name",
   "parent_department",
+<<<<<<< HEAD
+=======
+  "column_break_3",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "company",
   "is_group",
   "disabled",
   "section_break_4",
+<<<<<<< HEAD
   "leave_block_list",
   "leave_section",
   "leave_approvers",
   "expense_section",
   "expense_approvers",
+=======
+  "payroll_cost_center",
+  "column_break_9",
+  "leave_block_list",
+  "approvers",
+  "leave_approvers",
+  "expense_approvers",
+  "shift_request_approver",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "lft",
   "rgt",
   "old_parent"
@@ -30,14 +44,26 @@
    "label": "Department",
    "oldfieldname": "department_name",
    "oldfieldtype": "Data",
+<<<<<<< HEAD
    "reqd": 1
+=======
+   "reqd": 1,
+   "show_days": 1,
+   "show_seconds": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "fieldname": "parent_department",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Parent Department",
+<<<<<<< HEAD
    "options": "Department"
+=======
+   "options": "Department",
+   "show_days": 1,
+   "show_seconds": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "fieldname": "company",
@@ -45,7 +71,13 @@
    "in_standard_filter": 1,
    "label": "Company",
    "options": "Company",
+<<<<<<< HEAD
    "reqd": 1
+=======
+   "reqd": 1,
+   "show_days": 1,
+   "show_seconds": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "bold": 1,
@@ -53,17 +85,35 @@
    "fieldname": "is_group",
    "fieldtype": "Check",
    "in_list_view": 1,
+<<<<<<< HEAD
    "label": "Is Group"
+=======
+   "label": "Is Group",
+   "show_days": 1,
+   "show_seconds": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "default": "0",
    "fieldname": "disabled",
    "fieldtype": "Check",
+<<<<<<< HEAD
    "label": "Disabled"
   },
   {
    "fieldname": "section_break_4",
    "fieldtype": "Section Break"
+=======
+   "label": "Disabled",
+   "show_days": 1,
+   "show_seconds": 1
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break",
+   "show_days": 1,
+   "show_seconds": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "description": "Days for which Holidays are blocked for this department.",
@@ -71,6 +121,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Leave Block List",
+<<<<<<< HEAD
    "options": "Leave Block List"
   },
   {
@@ -96,6 +147,27 @@
    "fieldtype": "Table",
    "label": "Expense Approver",
    "options": "Department Approver"
+=======
+   "options": "Leave Block List",
+   "show_days": 1,
+   "show_seconds": 1
+  },
+  {
+   "fieldname": "leave_approvers",
+   "fieldtype": "Table",
+   "label": "Leave Approver",
+   "options": "Department Approver",
+   "show_days": 1,
+   "show_seconds": 1
+  },
+  {
+   "fieldname": "expense_approvers",
+   "fieldtype": "Table",
+   "label": "Expense Approver",
+   "options": "Department Approver",
+   "show_days": 1,
+   "show_seconds": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "fieldname": "lft",
@@ -103,7 +175,13 @@
    "hidden": 1,
    "label": "lft",
    "print_hide": 1,
+<<<<<<< HEAD
    "read_only": 1
+=======
+   "read_only": 1,
+   "show_days": 1,
+   "show_seconds": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "fieldname": "rgt",
@@ -111,7 +189,13 @@
    "hidden": 1,
    "label": "rgt",
    "print_hide": 1,
+<<<<<<< HEAD
    "read_only": 1
+=======
+   "read_only": 1,
+   "show_days": 1,
+   "show_seconds": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "fieldname": "old_parent",
@@ -119,14 +203,60 @@
    "hidden": 1,
    "ignore_user_permissions": 1,
    "label": "Old Parent",
+<<<<<<< HEAD
    "print_hide": 1
+=======
+   "print_hide": 1,
+   "show_days": 1,
+   "show_seconds": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break",
+   "show_days": 1,
+   "show_seconds": 1
+  },
+  {
+   "fieldname": "payroll_cost_center",
+   "fieldtype": "Link",
+   "label": "Payroll Cost Center",
+   "options": "Cost Center",
+   "show_days": 1,
+   "show_seconds": 1
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break",
+   "show_days": 1,
+   "show_seconds": 1
+  },
+  {
+   "description": "The first Approver in the list will be set as the default Approver.",
+   "fieldname": "approvers",
+   "fieldtype": "Section Break",
+   "label": "Approvers",
+   "show_days": 1,
+   "show_seconds": 1
+  },
+  {
+   "fieldname": "shift_request_approver",
+   "fieldtype": "Table",
+   "label": "Shift Request Approver",
+   "options": "Department Approver",
+   "show_days": 1,
+   "show_seconds": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   }
  ],
  "icon": "fa fa-sitemap",
  "idx": 1,
  "is_tree": 1,
  "links": [],
+<<<<<<< HEAD
  "modified": "2020-03-18 18:26:05.966022",
+=======
+ "modified": "2020-06-23 15:42:00.563272",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Department",

@@ -29,6 +29,7 @@ class ProductBundle(Document):
 			if frappe.db.exists("Product Bundle", item.item_code):
 				frappe.throw(_("Row #{0}: Child Item should not be a Product Bundle. Please remove Item {1} and Save").format(item.idx, frappe.bold(item.item_code)))
 
+<<<<<<< HEAD
 	def validate_duplicate_packing_item(self):
 		items = []
 		for d in self.items:
@@ -38,6 +39,8 @@ class ProductBundle(Document):
 				frappe.throw(_("The item {0} added multiple times")
 					.format(frappe.bold(d.item_code)), title=_("Duplicate Item Error"))
 
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
 def get_new_item_code(doctype, txt, searchfield, start, page_len, filters):

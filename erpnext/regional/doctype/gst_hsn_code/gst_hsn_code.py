@@ -30,4 +30,8 @@ def update_item_document(items, taxes):
 				'tax_category': tax.tax_category,
 				'valid_from': tax.valid_from
 			})
+<<<<<<< HEAD
 			item_to_be_updated.save()
+=======
+			item_to_be_updated.save()
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

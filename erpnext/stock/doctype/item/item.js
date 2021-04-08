@@ -26,19 +26,19 @@ frappe.ui.form.on("Item", {
 
 	refresh: function(frm) {
 		if (frm.doc.is_stock_item) {
-			frm.add_custom_button(__("Balance"), function() {
+			frm.add_custom_button(__("Stock Balance"), function() {
 				frappe.route_options = {
 					"item_code": frm.doc.name
 				}
 				frappe.set_route("query-report", "Stock Balance");
 			}, __("View"));
-			frm.add_custom_button(__("Ledger"), function() {
+			frm.add_custom_button(__("Stock Ledger"), function() {
 				frappe.route_options = {
 					"item_code": frm.doc.name
 				}
 				frappe.set_route("query-report", "Stock Ledger");
 			}, __("View"));
-			frm.add_custom_button(__("Projected"), function() {
+			frm.add_custom_button(__("Stock Projected Qty"), function() {
 				frappe.route_options = {
 					"item_code": frm.doc.name
 				}
@@ -81,11 +81,11 @@ frappe.ui.form.on("Item", {
 				}, __('Create'));
 			}
 
-			frm.page.set_inner_btn_group_as_primary(__('Create'));
+			// frm.page.set_inner_btn_group_as_primary(__('Create'));
 		}
 		if (frm.doc.variant_of) {
 			frm.set_intro(__('This Item is a Variant of {0} (Template).',
-				[`<a href="#Form/Item/${frm.doc.variant_of}">${frm.doc.variant_of}</a>`]), true);
+				[`<a href="/app/item/${frm.doc.variant_of}" onclick="location.reload()">${frm.doc.variant_of}</a>`]), true);
 		}
 
 		if (frappe.defaults.get_default("item_naming_by")!="Naming Series" || frm.doc.variant_of) {
@@ -137,10 +137,17 @@ frappe.ui.form.on("Item", {
 	},
 
 	gst_hsn_code: function(frm) {
+<<<<<<< HEAD
 		if(!frm.doc.taxes || !frm.doc.taxes.length) {
 			frappe.db.get_doc("GST HSN Code", frm.doc.gst_hsn_code).then(hsn_doc => {
 				$.each(hsn_doc.taxes || [], function(i, tax) {
 					let a = frappe.model.add_child(frm.doc, 'Item Tax', 'taxes');
+=======
+		if((!frm.doc.taxes || !frm.doc.taxes.length) && frm.doc.gst_hsn_code) {
+			frappe.db.get_doc("GST HSN Code", frm.doc.gst_hsn_code).then(hsn_doc => {
+				$.each(hsn_doc.taxes || [], function(i, tax) {
+					let a = frappe.model.add_child(cur_frm.doc, 'Item Tax', 'taxes');
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 					a.item_tax_template = tax.item_tax_template;
 					a.tax_category = tax.tax_category;
 					a.valid_from = tax.valid_from;
@@ -380,11 +387,13 @@ $.extend(erpnext.item, {
 		// Show Stock Levels only if is_stock_item
 		if (frm.doc.is_stock_item) {
 			frappe.require('assets/js/item-dashboard.min.js', function() {
-				var section = frm.dashboard.add_section('<h5 style="margin-top: 0px;">\
-					<a href="#stock-balance">' + __("Stock Levels") + '</a></h5>');
+				const section = frm.dashboard.add_section('', __("Stock Levels"));
 				erpnext.item.item_dashboard = new erpnext.stock.ItemDashboard({
 					parent: section,
-					item_code: frm.doc.name
+					item_code: frm.doc.name,
+					page_length: 20,
+					method: 'erpnext.stock.dashboard.item_dashboard.get_data',
+					template: 'item_dashboard_list'
 				});
 				erpnext.item.item_dashboard.refresh();
 			});
@@ -650,7 +659,7 @@ $.extend(erpnext.item, {
 					if (r.message) {
 						var variant = r.message;
 						frappe.msgprint_dialog = frappe.msgprint(__("Item Variant {0} already exists with same attributes",
-							[repl('<a href="#Form/Item/%(item_encoded)s" class="strong variant-click">%(item)s</a>', {
+							[repl('<a href="/app/item/%(item_encoded)s" class="strong variant-click">%(item)s</a>', {
 								item_encoded: encodeURIComponent(variant),
 								item: variant
 							})]
@@ -715,6 +724,18 @@ $.extend(erpnext.item, {
 				.on('focus', function(e) {
 					$(e.target).val('').trigger('input');
 				})
+				.on("awesomplete-open", () => {
+					let modal = field.$input.parents('.modal-dialog')[0];
+					if (modal) {
+						$(modal).removeClass("modal-dialog-scrollable");
+					}
+				})
+				.on("awesomplete-close", () => {
+					let modal = field.$input.parents('.modal-dialog')[0];
+					if (modal) {
+						$(modal).addClass("modal-dialog-scrollable");
+					}
+				});
 		});
 	},
 

@@ -8,6 +8,10 @@ def execute():
 	if not company:
 		return
 
+<<<<<<< HEAD
+=======
+	frappe.reload_doc("custom", "doctype", "custom_field")
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	frappe.reload_doc("regional", "doctype", "e_invoice_settings")
 	custom_fields = {
 		'Sales Invoice': [
@@ -35,9 +39,22 @@ def execute():
 	add_permissions()
 	add_print_formats()
 
+<<<<<<< HEAD
 	t = {
 		'mode_of_transport': [{'default': None}],
 		'ewaybill': [
+=======
+	einvoice_cond = 'in_list(["Registered Regular", "SEZ", "Overseas", "Deemed Export"], doc.gst_category)'
+	t = {
+		'mode_of_transport': [{'default': None}],
+		'distance': [{'mandatory_depends_on': f'eval:{einvoice_cond} && doc.transporter'}],
+		'gst_vehicle_type': [{'mandatory_depends_on': f'eval:{einvoice_cond} && doc.mode_of_transport == "Road"'}],
+		'lr_date': [{'mandatory_depends_on': f'eval:{einvoice_cond} && in_list(["Air", "Ship", "Rail"], doc.mode_of_transport)'}],
+		'lr_no': [{'mandatory_depends_on': f'eval:{einvoice_cond} && in_list(["Air", "Ship", "Rail"], doc.mode_of_transport)'}],
+		'vehicle_no': [{'mandatory_depends_on': f'eval:{einvoice_cond} && doc.mode_of_transport == "Road"'}],
+		'ewaybill': [
+			{'read_only_depends_on': 'eval:doc.irn && doc.ewaybill'},
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			{'depends_on': 'eval:((doc.docstatus === 1 || doc.ewaybill) && doc.eway_bill_cancelled === 0)'}
 		]
 	}
@@ -45,4 +62,8 @@ def execute():
 	for field, conditions in t.items():
 		for c in conditions:
 			[(prop, value)] = c.items()
+<<<<<<< HEAD
 			frappe.db.set_value('Custom Field', { 'fieldname': field }, prop, value)
+=======
+			frappe.db.set_value('Custom Field', { 'fieldname': field }, prop, value)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

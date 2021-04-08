@@ -71,14 +71,14 @@ def add_bank_accounts(response, bank, company):
 
 	default_gl_account = get_default_bank_cash_account(company, "Bank")
 	if not default_gl_account:
-		frappe.throw(_("Please setup a default bank account for company {0}".format(company)))
+		frappe.throw(_("Please setup a default bank account for company {0}").format(company))
 
 	for account in response["accounts"]:
-		acc_type = frappe.db.get_value("Account Type", account["type"])
+		acc_type = frappe.db.get_value("Bank Account Type", account["type"])
 		if not acc_type:
 			add_account_type(account["type"])
 
-		acc_subtype = frappe.db.get_value("Account Subtype", account["subtype"])
+		acc_subtype = frappe.db.get_value("Bank Account Subtype", account["subtype"])
 		if not acc_subtype:
 			add_account_subtype(account["subtype"])
 
@@ -113,7 +113,7 @@ def add_bank_accounts(response, bank, company):
 def add_account_type(account_type):
 	try:
 		frappe.get_doc({
-			"doctype": "Account Type",
+			"doctype": "Bank Account Type",
 			"account_type": account_type
 		}).insert()
 	except Exception:
@@ -123,7 +123,7 @@ def add_account_type(account_type):
 def add_account_subtype(account_subtype):
 	try:
 		frappe.get_doc({
-			"doctype": "Account Subtype",
+			"doctype": "Bank Account Subtype",
 			"account_subtype": account_subtype
 		}).insert()
 	except Exception:
@@ -134,7 +134,10 @@ def add_account_subtype(account_subtype):
 def sync_transactions(bank, bank_account):
 	"""Sync transactions based on the last integration date as the start date, after sync is completed
 	add the transaction date of the oldest transaction as the last integration date."""
+<<<<<<< HEAD
 
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	last_transaction_date = frappe.db.get_value("Bank Account", bank_account, "last_integration_date")
 	if last_transaction_date:
 		start_date = formatdate(last_transaction_date, "YYYY-MM-dd")
@@ -167,7 +170,6 @@ def get_transactions(bank, bank_account=None, start_date=None, end_date=None):
 		related_bank = frappe.db.get_values("Bank Account", bank_account, ["bank", "integration_id"], as_dict=True)
 		access_token = frappe.db.get_value("Bank", related_bank[0].bank, "plaid_access_token")
 		account_id = related_bank[0].integration_id
-
 	else:
 		access_token = frappe.db.get_value("Bank", bank, "plaid_access_token")
 		account_id = None
@@ -206,8 +208,8 @@ def new_bank_transaction(transaction):
 				"date": getdate(transaction["date"]),
 				"status": status,
 				"bank_account": bank_account,
-				"debit": debit,
-				"credit": credit,
+				"deposit": debit,
+				"withdrawal": credit,
 				"currency": transaction["iso_currency_code"],
 				"transaction_id": transaction["transaction_id"],
 				"reference_number": transaction["payment_meta"]["reference_number"],
@@ -229,8 +231,8 @@ def new_bank_transaction(transaction):
 
 def automatic_synchronization():
 	settings = frappe.get_doc("Plaid Settings", "Plaid Settings")
-
 	if settings.enabled == 1 and settings.automatic_sync == 1:
+<<<<<<< HEAD
 		plaid_accounts = frappe.get_all("Bank Account", filters={"integration_id": ["!=", ""]}, fields=["name", "bank"])
 
 		for plaid_account in plaid_accounts:
@@ -239,8 +241,28 @@ def automatic_synchronization():
 				bank=plaid_account.bank,
 				bank_account=plaid_account.name
 			)
+=======
+		enqueue_synchronization()
+
+@frappe.whitelist()
+def enqueue_synchronization():
+	plaid_accounts = frappe.get_all("Bank Account",
+		filters={"integration_id": ["!=", ""]},
+		fields=["name", "bank"])
+
+	for plaid_account in plaid_accounts:
+		frappe.enqueue(
+			"erpnext.erpnext_integrations.doctype.plaid_settings.plaid_settings.sync_transactions",
+			bank=plaid_account.bank,
+			bank_account=plaid_account.name
+		)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 @frappe.whitelist()
 def get_link_token_for_update(access_token):
 	plaid = PlaidConnector(access_token)
+<<<<<<< HEAD
 	return plaid.get_link_token(update_mode=True)
+=======
+	return plaid.get_link_token(update_mode=True)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

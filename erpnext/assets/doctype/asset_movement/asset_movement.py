@@ -87,12 +87,10 @@ class AssetMovement(Document):
 
 	def on_submit(self):
 		self.set_latest_location_in_asset()
-	
-	def before_cancel(self):
-		self.validate_last_movement()
 		
 	def on_cancel(self):
 		self.set_latest_location_in_asset()
+<<<<<<< HEAD
 	
 	def validate_last_movement(self):
 		for d in self.assets:
@@ -114,6 +112,8 @@ class AssetMovement(Document):
 			if auto_gen_movement_entry and auto_gen_movement_entry[0].get('name') == self.name:
 				frappe.throw(_('{0} will be cancelled automatically on asset cancellation as it was \
 					auto generated for Asset {1}').format(self.name, d.asset))
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	def set_latest_location_in_asset(self):
 		current_location, current_employee = '', ''

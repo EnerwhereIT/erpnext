@@ -18,6 +18,7 @@
   "task_name",
   "maintenance_type",
   "periodicity",
+<<<<<<< HEAD
   "assign_to_name",
   "column_break_6",
   "due_date",
@@ -27,6 +28,15 @@
   "has_certificate",
   "certificate_attachement",
   "section_break_6",
+=======
+  "has_certificate",
+  "certificate_attachement",
+  "column_break_6",
+  "maintenance_status",
+  "assign_to_name",
+  "due_date",
+  "completion_date",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "description",
   "column_break_9",
   "actions_performed",
@@ -70,7 +80,12 @@
   },
   {
    "fieldname": "section_break_5",
+<<<<<<< HEAD
    "fieldtype": "Section Break"
+=======
+   "fieldtype": "Section Break",
+   "label": "Maintenance Details"
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "fieldname": "task",
@@ -124,10 +139,13 @@
    "reqd": 1
   },
   {
+<<<<<<< HEAD
    "fieldname": "section_break_12",
    "fieldtype": "Section Break"
   },
   {
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "default": "0",
    "fetch_from": "task.certificate_required",
    "fieldname": "has_certificate",
@@ -141,10 +159,13 @@
    "label": "Certificate"
   },
   {
+<<<<<<< HEAD
    "fieldname": "section_break_6",
    "fieldtype": "Column Break"
   },
   {
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
    "fetch_from": "task.description",
    "fieldname": "description",
    "fieldtype": "Read Only",
@@ -179,9 +200,16 @@
    "read_only": 1
   }
  ],
+<<<<<<< HEAD
  "is_submittable": 1,
  "links": [],
  "modified": "2020-05-28 20:51:48.238397",
+=======
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2021-01-22 12:33:45.888124",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "Assets",
  "name": "Asset Maintenance Log",

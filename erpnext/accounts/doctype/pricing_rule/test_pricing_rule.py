@@ -56,6 +56,7 @@ class TestPricingRule(unittest.TestCase):
 		self.assertEqual(details.get("discount_percentage"), 10)
 
 		prule = frappe.get_doc(test_record.copy())
+		prule.priority = 1
 		prule.applicable_for = "Customer"
 		prule.title = "_Test Pricing Rule for Customer"
 		self.assertRaises(MandatoryError, prule.insert)
@@ -261,6 +262,7 @@ class TestPricingRule(unittest.TestCase):
 			"rate_or_discount": "Discount Percentage",
 			"rate": 0,
 			"discount_percentage": 17.5,
+			"priority": 1,
 			"company": "_Test Company"
 		}).insert()
 
@@ -326,6 +328,24 @@ class TestPricingRule(unittest.TestCase):
 		self.assertEquals(item.discount_amount, 110)
 		self.assertEquals(item.rate, 990)
 
+<<<<<<< HEAD
+=======
+	def test_pricing_rule_with_margin_and_discount_amount(self):
+		frappe.delete_doc_if_exists('Pricing Rule', '_Test Pricing Rule')
+		make_pricing_rule(selling=1, margin_type="Percentage", margin_rate_or_amount=10,
+			rate_or_discount="Discount Amount", discount_amount=110)
+		si = create_sales_invoice(do_not_save=True)
+		si.items[0].price_list_rate = 1000
+		si.payment_schedule = []
+		si.insert(ignore_permissions=True)
+
+		item = si.items[0]
+		self.assertEquals(item.margin_rate_or_amount, 10)
+		self.assertEquals(item.rate_with_margin, 1100)
+		self.assertEquals(item.discount_amount, 110)
+		self.assertEquals(item.rate, 990)
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def test_pricing_rule_for_product_discount_on_same_item(self):
 		frappe.delete_doc_if_exists('Pricing Rule', '_Test Pricing Rule')
 		test_record = {
@@ -430,6 +450,63 @@ class TestPricingRule(unittest.TestCase):
 
 		self.assertTrue(details)
 
+<<<<<<< HEAD
+=======
+	def test_pricing_rule_for_condition(self):
+		frappe.delete_doc_if_exists("Pricing Rule", "_Test Pricing Rule")
+
+		make_pricing_rule(selling=1, margin_type="Percentage", \
+			condition="customer=='_Test Customer 1' and is_return==0", discount_percentage=10)
+
+		# Incorrect Customer and Correct is_return value
+		si = create_sales_invoice(do_not_submit=True, customer="_Test Customer 2", is_return=0)
+		si.items[0].price_list_rate = 1000
+		si.submit()
+		item = si.items[0]
+		self.assertEquals(item.rate, 100)
+
+		# Correct Customer and Incorrect is_return value
+		si = create_sales_invoice(do_not_submit=True, customer="_Test Customer 1", is_return=1, qty=-1)
+		si.items[0].price_list_rate = 1000
+		si.submit()
+		item = si.items[0]
+		self.assertEquals(item.rate, 100)
+
+		# Correct Customer and correct is_return value
+		si = create_sales_invoice(do_not_submit=True, customer="_Test Customer 1", is_return=0)
+		si.items[0].price_list_rate = 1000
+		si.submit()
+		item = si.items[0]
+		self.assertEquals(item.rate, 900)
+
+	def test_multiple_pricing_rules(self):
+		make_pricing_rule(discount_percentage=20, selling=1, priority=1, apply_multiple_pricing_rules=1,
+			title="_Test Pricing Rule 1")
+		make_pricing_rule(discount_percentage=10, selling=1, title="_Test Pricing Rule 2", priority=2,
+			apply_multiple_pricing_rules=1)
+		si = create_sales_invoice(do_not_submit=True, customer="_Test Customer 1", qty=1)
+		self.assertEqual(si.items[0].discount_percentage, 30)
+		si.delete()
+
+		frappe.delete_doc_if_exists("Pricing Rule", "_Test Pricing Rule 1")
+		frappe.delete_doc_if_exists("Pricing Rule", "_Test Pricing Rule 2")
+
+	def test_multiple_pricing_rules_with_apply_discount_on_discounted_rate(self):
+		frappe.delete_doc_if_exists("Pricing Rule", "_Test Pricing Rule")
+
+		make_pricing_rule(discount_percentage=20, selling=1, priority=1, apply_multiple_pricing_rules=1,
+			title="_Test Pricing Rule 1")
+		make_pricing_rule(discount_percentage=10, selling=1, priority=2,
+			apply_discount_on_rate=1, title="_Test Pricing Rule 2", apply_multiple_pricing_rules=1)
+
+		si = create_sales_invoice(do_not_submit=True, customer="_Test Customer 1", qty=1)
+		self.assertEqual(si.items[0].discount_percentage, 28)
+		si.delete()
+
+		frappe.delete_doc_if_exists("Pricing Rule", "_Test Pricing Rule 1")
+		frappe.delete_doc_if_exists("Pricing Rule", "_Test Pricing Rule 2")
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def test_item_price_with_pricing_rule(self):
 		item = make_item("Water Flask")
 		make_item_price("Water Flask", "_Test Price List", 100)
@@ -494,6 +571,7 @@ def make_pricing_rule(**args):
 		"applicable_for": args.applicable_for,
 		"selling": args.selling or 0,
 		"currency": "USD",
+		"apply_discount_on_rate": args.apply_discount_on_rate or 0,
 		"buying": args.buying or 0,
 		"min_qty": args.min_qty or 0.0,
 		"max_qty": args.max_qty or 0.0,
@@ -502,6 +580,11 @@ def make_pricing_rule(**args):
 		"rate": args.rate or 0.0,
 		"margin_rate_or_amount": args.margin_rate_or_amount or 0.0,
 		"condition": args.condition or '',
+<<<<<<< HEAD
+=======
+		"priority": 1,
+		"discount_amount": args.discount_amount or 0.0,
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		"apply_multiple_pricing_rules": args.apply_multiple_pricing_rules or 0
 	})
 

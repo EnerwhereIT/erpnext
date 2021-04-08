@@ -6,6 +6,12 @@ erpnext.setup_auto_gst_taxation = (doctype) => {
 		shipping_address: function(frm) {
 			frm.trigger('get_tax_template');
 		},
+<<<<<<< HEAD
+=======
+		supplier_address: function(frm) {
+			frm.trigger('get_tax_template');
+		},
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		tax_category: function(frm) {
 			frm.trigger('get_tax_template');
 		},
@@ -34,6 +40,7 @@ erpnext.setup_auto_gst_taxation = (doctype) => {
 					doctype: frm.doc.doctype,
 					company: frm.doc.company
 				},
+<<<<<<< HEAD
 				callback: function(r) {
 					if(r.message) {
 						frm.set_value('taxes_and_charges', r.message.taxes_and_charges);
@@ -41,10 +48,22 @@ erpnext.setup_auto_gst_taxation = (doctype) => {
 					} else if (frm.doc.is_internal_supplier || frm.doc.is_internal_customer) {
 						frm.set_value('taxes_and_charges', '');
 						frm.set_value('taxes', []);
+=======
+				debounce: 2000,
+				callback: function(r) {
+					if(r.message) {
+						frm.set_value('taxes_and_charges', r.message.taxes_and_charges);
+						frm.set_value('taxes', r.message.taxes);
+						frm.set_value('place_of_supply', r.message.place_of_supply);
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 					}
 				}
 			});
 		}
 	});
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 

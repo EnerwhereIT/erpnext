@@ -9,8 +9,8 @@ from erpnext.accounts.report.financial_statements import (get_period_list, get_c
 import copy
 
 def execute(filters=None):
-	period_list = get_period_list(filters.from_fiscal_year, filters.to_fiscal_year,
-		filters.periodicity, filters.accumulated_values, filters.company)
+	period_list = get_period_list(filters.from_fiscal_year, filters.to_fiscal_year, filters.period_start_date,
+		filters.period_end_date, filters.filter_based_on, filters.periodicity, filters.accumulated_values, filters.company)
 
 	columns, data = [], []
 
@@ -35,7 +35,10 @@ def execute(filters=None):
 		})
 		return columns, data
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	# to avoid error eg: gross_income[0] : list index out of range
 	if not gross_income:
 		gross_income = [{}]

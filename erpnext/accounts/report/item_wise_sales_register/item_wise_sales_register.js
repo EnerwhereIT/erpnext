@@ -4,6 +4,7 @@
 frappe.query_reports["Item-wise Sales Register"] = {
 	"filters": [
 		{
+<<<<<<< HEAD
 			"fieldname": "date_range",
 			"label": __("Date Range"),
 			"fieldtype": "DateRange",
@@ -11,6 +12,22 @@ frappe.query_reports["Item-wise Sales Register"] = {
 			"reqd": 1
 		},
 		{
+=======
+			"fieldname":"from_date",
+			"label": __("From Date"),
+			"fieldtype": "Date",
+			"default": frappe.datetime.add_months(frappe.datetime.get_today(), -1),
+			"reqd": 1,
+		},
+		{
+			"fieldname":"to_date",
+			"label": __("To Date"),
+			"fieldtype": "Date",
+			"default": frappe.datetime.get_today(),
+			"reqd": 1,
+		},
+		{
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			"fieldname": "customer",
 			"label": __("Customer"),
 			"fieldtype": "Link",

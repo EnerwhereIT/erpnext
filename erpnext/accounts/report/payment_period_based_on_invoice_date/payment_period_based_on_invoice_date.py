@@ -136,19 +136,31 @@ def get_columns(filters):
 		},
 		{
 			"fieldname": "range1",
+<<<<<<< HEAD
 			"label": _("0-30"),
+=======
+			"label": "0-30",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			"fieldtype": "Currency",
 			"width": 140
 		},
 		{
 			"fieldname": "range2",
+<<<<<<< HEAD
 			"label": _("30-60"),
+=======
+			"label": "30-60",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			"fieldtype": "Currency",
 			"width": 140
 		},
 		{
 			"fieldname": "range3",
+<<<<<<< HEAD
 			"label": _("60-90"),
+=======
+			"label": "60-90",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			"fieldtype": "Currency",
 			"width": 140
 		},

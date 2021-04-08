@@ -8,6 +8,10 @@
   "employee_advance",
   "posting_date",
   "advance_paid",
+<<<<<<< HEAD
+=======
+  "column_break_4",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   "unclaimed_amount",
   "allocated_amount",
   "advance_account"
@@ -78,10 +82,22 @@
    "hidden": 1,
    "label": "Advance Account",
    "options": "Account"
+<<<<<<< HEAD
   }
  ],
  "istable": 1,
  "modified": "2020-01-14 17:49:17.968373",
+=======
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2019-12-17 13:53:22.111766",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Expense Claim Advance",

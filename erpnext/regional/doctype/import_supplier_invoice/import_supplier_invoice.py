@@ -241,7 +241,11 @@ def create_supplier(supplier_group, args):
 
 		if not frappe.get_list("Contact", filters):
 			new_contact = frappe.new_doc("Contact")
+<<<<<<< HEAD
 			new_contact.first_name = args.supplier
+=======
+			new_contact.first_name = args.supplier[:30]
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			new_contact.append('links', {
 				"link_doctype": "Supplier",
 				"link_name": existing_supplier_name
@@ -252,7 +256,11 @@ def create_supplier(supplier_group, args):
 	else:
 
 		new_supplier = frappe.new_doc("Supplier")
+<<<<<<< HEAD
 		new_supplier.supplier_name = args.supplier
+=======
+		new_supplier.supplier_name = re.sub('&amp', '&', args.supplier)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		new_supplier.supplier_group = supplier_group
 		new_supplier.tax_id = args.tax_id
 		new_supplier.fiscal_code = args.fiscal_code
@@ -260,7 +268,11 @@ def create_supplier(supplier_group, args):
 		new_supplier.save()
 
 		new_contact = frappe.new_doc("Contact")
+<<<<<<< HEAD
 		new_contact.first_name = args.supplier
+=======
+		new_contact.first_name = args.supplier[:30]
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		new_contact.append('links', {
 			"link_doctype": "Supplier",
 			"link_name": new_supplier.name

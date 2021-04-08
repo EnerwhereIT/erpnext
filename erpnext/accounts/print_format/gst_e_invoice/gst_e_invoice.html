@@ -22,9 +22,15 @@
 		</p>
 	</div>
 	{% endif %}
+<<<<<<< HEAD
 	<div class="row section-break" style="border-bottom: 1px solid #d1d8dd; padding-bottom: 10px;">
 		<h5 class="font-bold" style="margin-left: 15px; margin-top: 0px;">1. Transaction Details</h5>
 		<div class="col-xs-7 column-break">
+=======
+	<h5 class="font-bold" style="margin-top: 0px;">1. Transaction Details</h5>
+	<div class="row section-break" style="border-bottom: 1px solid #d1d8dd; padding-bottom: 10px;">
+		<div class="col-xs-8 column-break">
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			<div class="row data-field">
 				<div class="col-xs-4"><label>IRN</label></div>
 				<div class="col-xs-8 value">{{ einvoice.Irn }}</div>
@@ -50,6 +56,7 @@
 				<div class="col-xs-8 value">{{ einvoice.DocDtls.No }}</div>
 			</div>
 		</div>
+<<<<<<< HEAD
 		<div class="col-xs-5 column-break">
 			<img src="{{ doc.qrcode_image }}" alt="QRCode Image" style="
 				width: 175px; height: 175px;
@@ -60,6 +67,14 @@
 	</div>
 	<div class="row section-break" style="border-bottom: 1px solid #d1d8dd; padding-bottom: 10px;">
 		<h5 class="font-bold" style="margin-left: 15px; margin-bottom: 0px;">2. Party Details</h5>
+=======
+		<div class="col-xs-4 column-break">
+			<img src="{{ doc.qrcode_image }}" width="175px" style="float: right;">
+		</div>
+	</div>
+	<h5 class="font-bold" style="margin-top: 15px; margin-bottom: 10px;">2. Party Details</h5>
+	<div class="row section-break" style="border-bottom: 1px solid #d1d8dd; padding-bottom: 10px;">
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		{%- set seller = einvoice.SellerDtls -%}
 		<div class="col-xs-6 column-break">
 			<h5 style="margin-bottom: 5px;">Seller</h5>
@@ -93,7 +108,11 @@
 		</div>
 	</div>
 	<div style="overflow-x: auto;">
+<<<<<<< HEAD
 		<h5 class="font-bold" style="margin-bottom: 0px;">3. Item Details</h5>
+=======
+		<h5 class="font-bold" style="margin-top: 15px; margin-bottom: 10px;">3. Item Details</h5>
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		<table class="table table-bordered">
 			<thead>
 				<tr>

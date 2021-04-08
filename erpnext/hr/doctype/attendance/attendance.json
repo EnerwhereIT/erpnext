@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "allow_import": 1,
  "autoname": "naming_series:",
  "creation": "2013-01-10 16:34:13",
@@ -18,11 +19,15 @@
   "attendance_date",
   "company",
   "department",
-  "shift",
   "attendance_request",
-  "amended_from",
+  "details_section",
+  "shift",
+  "in_time",
+  "out_time",
+  "column_break_18",
   "late_entry",
-  "early_exit"
+  "early_exit",
+  "amended_from"
  ],
  "fields": [
   {
@@ -63,6 +68,17 @@
    "oldfieldname": "employee_name",
    "oldfieldtype": "Data",
    "read_only": 1
+<<<<<<< HEAD
+=======
+  },
+  {
+   "depends_on": "working_hours",
+   "fieldname": "working_hours",
+   "fieldtype": "Float",
+   "label": "Working Hours",
+   "precision": "1",
+   "read_only": 1
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
   },
   {
    "default": "Present",
@@ -73,16 +89,17 @@
    "no_copy": 1,
    "oldfieldname": "status",
    "oldfieldtype": "Select",
-   "options": "\nPresent\nAbsent\nOn Leave\nHalf Day",
+   "options": "\nPresent\nAbsent\nOn Leave\nHalf Day\nWork From Home",
    "reqd": 1,
    "search_index": 1
   },
   {
-   "depends_on": "eval:doc.status==\"On Leave\"",
+   "depends_on": "eval:in_list([\"On Leave\", \"Half Day\"], doc.status)",
    "fieldname": "leave_type",
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Leave Type",
+   "mandatory_depends_on": "eval:in_list([\"On Leave\", \"Half Day\"], doc.status)",
    "oldfieldname": "leave_type",
    "oldfieldtype": "Link",
    "options": "Leave Type"
@@ -91,6 +108,7 @@
    "fieldname": "leave_application",
    "fieldtype": "Link",
    "label": "Leave Application",
+   "no_copy": 1,
    "options": "Leave Application",
    "read_only": 1
   },
@@ -128,6 +146,12 @@
    "read_only": 1
   },
   {
+   "fieldname": "shift",
+   "fieldtype": "Link",
+   "label": "Shift",
+   "options": "Shift Type"
+  },
+  {
    "fieldname": "attendance_request",
    "fieldtype": "Link",
    "label": "Attendance Request",
@@ -145,20 +169,6 @@
    "read_only": 1
   },
   {
-   "depends_on": "working_hours",
-   "fieldname": "working_hours",
-   "fieldtype": "Float",
-   "label": "Working Hours",
-   "precision": "1",
-   "read_only": 1
-  },
-  {
-   "fieldname": "shift",
-   "fieldtype": "Link",
-   "label": "Shift",
-   "options": "Shift Type"
-  },
-  {
    "default": "0",
    "fieldname": "late_entry",
    "fieldtype": "Check",
@@ -169,16 +179,44 @@
    "fieldname": "early_exit",
    "fieldtype": "Check",
    "label": "Early Exit"
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "depends_on": "shift",
+   "fieldname": "in_time",
+   "fieldtype": "Datetime",
+   "label": "In Time",
+   "read_only": 1
+  },
+  {
+   "depends_on": "shift",
+   "fieldname": "out_time",
+   "fieldtype": "Datetime",
+   "label": "Out Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_18",
+   "fieldtype": "Column Break"
   }
  ],
  "icon": "fa fa-ok",
  "idx": 1,
  "is_submittable": 1,
+<<<<<<< HEAD
  "modified": "2020-02-19 14:25:32.945842",
+=======
+ "links": [],
+ "modified": "2020-09-18 17:26:09.703215",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "modified_by": "Administrator",
  "module": "HR",
  "name": "Attendance",
- "owner": "ashwini@webnotestech.com",
+ "owner": "Administrator",
  "permissions": [
   {
    "cancel": 1,

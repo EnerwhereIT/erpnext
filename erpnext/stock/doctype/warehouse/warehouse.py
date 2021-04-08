@@ -29,7 +29,6 @@ class Warehouse(NestedSet):
 				self.set_onload('account', account)
 		load_address_and_contact(self)
 
-
 	def on_update(self):
 		self.update_nsm_model()
 
@@ -199,4 +198,8 @@ def get_warehouses_based_on_account(account, company=None):
 		frappe.throw(_("Warehouse not found against the account {0}")
 			.format(account))
 
+<<<<<<< HEAD
 	return warehouses
+=======
+	return warehouses
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

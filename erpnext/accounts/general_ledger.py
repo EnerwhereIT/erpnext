@@ -3,17 +3,13 @@
 
 from __future__ import unicode_literals
 import frappe, erpnext
-from frappe.utils import flt, cstr, cint, comma_and
+from frappe.utils import flt, cstr, cint, comma_and, today, getdate, formatdate, now
 from frappe import _
-from erpnext.accounts.utils import get_stock_and_account_balance
 from frappe.model.meta import get_field_precision
 from erpnext.accounts.doctype.budget.budget import validate_expense_against_budget
 from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import get_accounting_dimensions
 
-
 class ClosedAccountingPeriod(frappe.ValidationError): pass
-class StockAccountInvalidTransaction(frappe.ValidationError): pass
-class StockValueAndAccountBalanceOutOfSync(frappe.ValidationError): pass
 
 def make_gl_entries(gl_map, cancel=False, adv_adj=False, merge_entries=True, update_outstanding='Yes', from_repost=False):
 	if gl_map:
@@ -25,7 +21,7 @@ def make_gl_entries(gl_map, cancel=False, adv_adj=False, merge_entries=True, upd
 			else:
 				frappe.throw(_("Incorrect number of General Ledger Entries found. You might have selected a wrong Account in the transaction."))
 		else:
-			delete_gl_entries(gl_map, adv_adj=adv_adj, update_outstanding=update_outstanding)
+			make_reverse_gl_entries(gl_map, adv_adj=adv_adj, update_outstanding=update_outstanding)
 
 def validate_accounting_period(gl_map):
 	accounting_periods = frappe.db.sql(""" SELECT
@@ -45,12 +41,16 @@ def validate_accounting_period(gl_map):
 			}, as_dict=1)
 
 	if accounting_periods:
+<<<<<<< HEAD
 		frappe.throw(_("You cannot create or cancel any accounting entries within in the closed Accounting Period {0}")
+=======
+		frappe.throw(_("You cannot create or cancel any accounting entries with in the closed Accounting Period {0}")
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 			.format(frappe.bold(accounting_periods[0].name)), ClosedAccountingPeriod)
 
-def process_gl_map(gl_map, merge_entries=True):
+def process_gl_map(gl_map, merge_entries=True, precision=None):
 	if merge_entries:
-		gl_map = merge_similar_entries(gl_map)
+		gl_map = merge_similar_entries(gl_map, precision)
 	for entry in gl_map:
 		# toggle debit, credit if negative entry
 		if flt(entry.debit) < 0:
@@ -73,7 +73,7 @@ def process_gl_map(gl_map, merge_entries=True):
 
 	return gl_map
 
-def merge_similar_entries(gl_map):
+def merge_similar_entries(gl_map, precision=None):
 	merged_gl_map = []
 	accounting_dimensions = get_accounting_dimensions()
 	for entry in gl_map:
@@ -92,7 +92,13 @@ def merge_similar_entries(gl_map):
 
 	company = gl_map[0].company if gl_map else erpnext.get_default_company()
 	company_currency = erpnext.get_company_currency(company)
+<<<<<<< HEAD
 	precision = get_field_precision(frappe.get_meta("GL Entry").get_field("debit"), company_currency)
+=======
+
+	if not precision:
+		precision = get_field_precision(frappe.get_meta("GL Entry").get_field("debit"), company_currency)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	# filter zero debit and credit entries
 	merged_gl_map = filter(lambda x: flt(x.debit, precision)!=0 or flt(x.credit, precision)!=0, merged_gl_map)
@@ -124,22 +130,19 @@ def save_entries(gl_map, adv_adj, update_outstanding, from_repost=False):
 		validate_cwip_accounts(gl_map)
 
 	round_off_debit_credit(gl_map)
+
+	if gl_map:
+		check_freezing_date(gl_map[0]["posting_date"], adv_adj)
+
 	for entry in gl_map:
 		make_entry(entry, adv_adj, update_outstanding, from_repost)
-
-		# check against budget
-		if not from_repost:
-			validate_expense_against_budget(entry)
-
-	if not from_repost:
-		validate_account_for_perpetual_inventory(gl_map)
-
 
 def make_entry(args, adv_adj, update_outstanding, from_repost=False):
 	gle = frappe.new_doc("GL Entry")
 	gle.update(args)
 	gle.flags.ignore_permissions = 1
 	gle.flags.from_repost = from_repost
+<<<<<<< HEAD
 	gle.validate()
 	gle.db_insert()
 	gle.run_method("on_update_with_args", adv_adj, update_outstanding, from_repost)
@@ -196,6 +199,14 @@ def validate_account_for_perpetual_inventory(gl_map):
 			# 			'client_action': 'erpnext.route_to_adjustment_jv',
 			# 			'args': journal_entry_args
 			# 		})
+=======
+	gle.flags.adv_adj = adv_adj
+	gle.flags.update_outstanding = update_outstanding or 'Yes'
+	gle.submit()
+
+	if not from_repost:
+		validate_expense_against_budget(args)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 def validate_cwip_accounts(gl_map):
 	cwip_enabled = any([cint(ac.enable_cwip_accounting) for ac in frappe.db.get_all("Asset Category","enable_cwip_accounting")])
@@ -283,32 +294,65 @@ def get_round_off_account_and_cost_center(company):
 
 	return round_off_account, round_off_cost_center
 
-def delete_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,
-		adv_adj=False, update_outstanding="Yes"):
-
-	from erpnext.accounts.doctype.gl_entry.gl_entry import validate_balance_type, \
-		check_freezing_date, update_outstanding_amt, validate_frozen_account
+def make_reverse_gl_entries(gl_entries=None, voucher_type=None, voucher_no=None,
+	adv_adj=False, update_outstanding="Yes"):
+	"""
+		Get original gl entries of the voucher
+		and make reverse gl entries by swapping debit and credit
+	"""
 
 	if not gl_entries:
-		gl_entries = frappe.db.sql("""
-			select account, posting_date, party_type, party, cost_center, fiscal_year,voucher_type,
-			voucher_no, against_voucher_type, against_voucher, cost_center, company
-			from `tabGL Entry`
-			where voucher_type=%s and voucher_no=%s""", (voucher_type, voucher_no), as_dict=True)
+		gl_entries = frappe.get_all("GL Entry",
+			fields = ["*"],
+			filters = {
+				"voucher_type": voucher_type,
+				"voucher_no": voucher_no,
+				"is_cancelled": 0
+			})
 
 	if gl_entries:
 		validate_accounting_period(gl_entries)
 		check_freezing_date(gl_entries[0]["posting_date"], adv_adj)
+		set_as_cancel(gl_entries[0]['voucher_type'], gl_entries[0]['voucher_no'])
 
-	frappe.db.sql("""delete from `tabGL Entry` where voucher_type=%s and voucher_no=%s""",
-		(voucher_type or gl_entries[0]["voucher_type"], voucher_no or gl_entries[0]["voucher_no"]))
+		for entry in gl_entries:
+			entry['name'] = None
+			debit = entry.get('debit', 0)
+			credit = entry.get('credit', 0)
 
-	for entry in gl_entries:
-		validate_frozen_account(entry["account"], adv_adj)
-		validate_balance_type(entry["account"], adv_adj)
-		if not adv_adj:
-			validate_expense_against_budget(entry)
+			debit_in_account_currency = entry.get('debit_in_account_currency', 0)
+			credit_in_account_currency = entry.get('credit_in_account_currency', 0)
 
-		if entry.get("against_voucher") and update_outstanding == 'Yes' and not adv_adj:
-			update_outstanding_amt(entry["account"], entry.get("party_type"), entry.get("party"), entry.get("against_voucher_type"),
-				entry.get("against_voucher"), on_cancel=True)
+			entry['debit'] = credit
+			entry['credit'] = debit
+			entry['debit_in_account_currency'] = credit_in_account_currency
+			entry['credit_in_account_currency'] = debit_in_account_currency
+
+			entry['remarks'] = "On cancellation of " + entry['voucher_no']
+			entry['is_cancelled'] = 1
+
+			if entry['debit'] or entry['credit']:
+				make_entry(entry, adv_adj, "Yes")
+
+
+def check_freezing_date(posting_date, adv_adj=False):
+	"""
+		Nobody can do GL Entries where posting date is before freezing date
+		except authorized person
+	"""
+	if not adv_adj:
+		acc_frozen_upto = frappe.db.get_value('Accounts Settings', None, 'acc_frozen_upto')
+		if acc_frozen_upto:
+			frozen_accounts_modifier = frappe.db.get_value( 'Accounts Settings', None,'frozen_accounts_modifier')
+			if getdate(posting_date) <= getdate(acc_frozen_upto) \
+					and not frozen_accounts_modifier in frappe.get_roles():
+				frappe.throw(_("You are not authorized to add or update entries before {0}").format(formatdate(acc_frozen_upto)))
+
+def set_as_cancel(voucher_type, voucher_no):
+	"""
+		Set is_cancelled=1 in all original gl entries for the voucher
+	"""
+	frappe.db.sql("""UPDATE `tabGL Entry` SET is_cancelled = 1,
+		modified=%s, modified_by=%s
+		where voucher_type=%s and voucher_no=%s and is_cancelled = 0""",
+		(now(), frappe.session.user, voucher_type, voucher_no))

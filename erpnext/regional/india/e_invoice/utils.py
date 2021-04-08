@@ -10,13 +10,21 @@ import sys
 import json
 import base64
 import frappe
+<<<<<<< HEAD
+=======
+import six
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 import traceback
 import io
 from frappe import _, bold
 from pyqrcode import create as qrcreate
 from frappe.integrations.utils import make_post_request, make_get_request
 from erpnext.regional.india.utils import get_gst_accounts, get_place_of_supply
+<<<<<<< HEAD
 from frappe.utils.data import cstr, cint, formatdate as format_date, flt, time_diff_in_seconds, now_datetime, add_to_date, get_link_to_form
+=======
+from frappe.utils.data import cstr, cint, format_date, flt, time_diff_in_seconds, now_datetime, add_to_date, get_link_to_form
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 def validate_einvoice_fields(doc):
 	einvoicing_enabled = cint(frappe.db.get_value('E Invoice Settings', 'E Invoice Settings', 'enable'))
@@ -24,7 +32,11 @@ def validate_einvoice_fields(doc):
 	invalid_supply_type = doc.get('gst_category') not in ['Registered Regular', 'SEZ', 'Overseas', 'Deemed Export']
 	company_transaction = doc.get('billing_address_gstin') == doc.get('company_gstin')
 	no_taxes_applied = not doc.get('taxes')
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	if not einvoicing_enabled or invalid_doctype or invalid_supply_type or company_transaction or no_taxes_applied:
 		return
 
@@ -63,7 +75,11 @@ def get_transaction_details(invoice):
 	elif invoice.gst_category == 'Overseas': supply_type = 'EXPWOP'
 	elif invoice.gst_category == 'Deemed Export': supply_type = 'DEXP'
 
+<<<<<<< HEAD
 	if not supply_type: 
+=======
+	if not supply_type:
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		rr, sez, overseas, export = bold('Registered Regular'), bold('SEZ'), bold('Overseas'), bold('Deemed Export')
 		frappe.throw(_('GST category should be one of {}, {}, {}, {}').format(rr, sez, overseas, export),
 			title=_('Invalid Supply Type'))
@@ -86,10 +102,17 @@ def get_doc_details(invoice):
 		invoice_date=invoice_date
 	))
 
+<<<<<<< HEAD
 def get_party_details(address_name, company_address=None, billing_address=None, shipping_address=None):
 	d = frappe.get_all('Address', filters={'name': address_name}, fields=['*'])[0]
 
 	if ((not d.gstin and not shipping_address)
+=======
+def get_party_details(address_name):
+	d = frappe.get_all('Address', filters={'name': address_name}, fields=['*'])[0]
+
+	if (not d.gstin
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		or not d.city
 		or not d.pincode
 		or not d.address_title
@@ -107,6 +130,7 @@ def get_party_details(address_name, company_address=None, billing_address=None, 
 		# according to einvoice standard
 		pincode = 999999
 
+<<<<<<< HEAD
 	party_address_details = frappe._dict(dict(
 		legal_name=d.address_title,
 		location=d.city, pincode=d.pincode,
@@ -118,6 +142,17 @@ def get_party_details(address_name, company_address=None, billing_address=None, 
 		party_address_details.gstin = d.gstin
 
 	return party_address_details
+=======
+	return frappe._dict(dict(
+		gstin=d.gstin,
+		legal_name=sanitize_for_json(d.address_title),
+		location=sanitize_for_json(d.city),
+		pincode=d.pincode,
+		state_code=d.gst_state_number,
+		address_line1=sanitize_for_json(d.address_line1),
+		address_line2=sanitize_for_json(d.address_line2)
+	))
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 def get_gstin_details(gstin):
 	if not hasattr(frappe.local, 'gstin_cache'):
@@ -132,7 +167,11 @@ def get_gstin_details(gstin):
 	if details:
 		frappe.local.gstin_cache[key] = details
 		return details
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	if not details:
 		return GSPConnector.get_gstin_details(gstin)
 
@@ -150,8 +189,16 @@ def get_overseas_address_details(address_name):
 		)
 
 	return frappe._dict(dict(
+<<<<<<< HEAD
 		gstin='URP', legal_name=address_title, location=city,
 		address_line1=address_line1, address_line2=address_line2,
+=======
+		gstin='URP',
+		legal_name=sanitize_for_json(address_title),
+		location=city,
+		address_line1=sanitize_for_json(address_line1),
+		address_line2=sanitize_for_json(address_line2),
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		pincode=999999, state_code=96, place_of_supply=96
 	))
 
@@ -164,7 +211,11 @@ def get_item_list(invoice):
 		item.update(d.as_dict())
 
 		item.sr_no = d.idx
+<<<<<<< HEAD
 		item.description = json.dumps(d.item_name)[1:-1]
+=======
+		item.description = sanitize_for_json(d.item_name)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 		item.qty = abs(item.qty)
 		item.discount_amount = 0
@@ -178,7 +229,11 @@ def get_item_list(invoice):
 		item.serial_no = ""
 
 		item = update_item_taxes(invoice, item)
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		item.total_value = abs(
 			item.taxable_value + item.igst_amount + item.sgst_amount +
 			item.cgst_amount + item.cess_amount + item.cess_nadv_amount + item.other_charges
@@ -218,9 +273,15 @@ def update_item_taxes(invoice, item):
 					item.cess_amount += abs(item_tax_amount_after_discount)
 
 			for tax_type in ['igst', 'cgst', 'sgst']:
+<<<<<<< HEAD
 				if t.account_head in gst_accounts['{}_account'.format(tax_type)]:
 					item.tax_rate += item_tax_rate
 					item['{}_amount'.format(tax_type)] += abs(item_tax_amount)
+=======
+				if t.account_head in gst_accounts[f'{tax_type}_account']:
+					item.tax_rate += item_tax_rate
+					item[f'{tax_type}_amount'] += abs(item_tax_amount)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	return item
 
@@ -238,9 +299,15 @@ def get_invoice_value_details(invoice):
 	invoice_value_details.round_off = invoice.base_rounding_adjustment
 	invoice_value_details.base_grand_total = abs(invoice.base_rounded_total) or abs(invoice.base_grand_total)
 	invoice_value_details.grand_total = abs(invoice.rounded_total) or abs(invoice.grand_total)
+<<<<<<< HEAD
 	
 	invoice_value_details = update_invoice_taxes(invoice, invoice_value_details)
 	
+=======
+
+	invoice_value_details = update_invoice_taxes(invoice, invoice_value_details)
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	return invoice_value_details
 
 def update_invoice_taxes(invoice, invoice_value_details):
@@ -257,6 +324,7 @@ def update_invoice_taxes(invoice, invoice_value_details):
 			if t.account_head in gst_accounts.cess_account:
 				# using after discount amt since item also uses after discount amt for cess calc
 				invoice_value_details.total_cess_amt += abs(t.base_tax_amount_after_discount_amount)
+<<<<<<< HEAD
 			
 			for tax_type in ['igst', 'cgst', 'sgst']:
 				if t.account_head in gst_accounts['{}_account'.format(tax_type)]:
@@ -264,6 +332,15 @@ def update_invoice_taxes(invoice, invoice_value_details):
 		else:
 			invoice_value_details.total_other_charges += abs(t.base_tax_amount_after_discount_amount)
 	
+=======
+
+			for tax_type in ['igst', 'cgst', 'sgst']:
+				if t.account_head in gst_accounts[f'{tax_type}_account']:
+					invoice_value_details[f'total_{tax_type}_amt'] += abs(t.base_tax_amount_after_discount_amount)
+		else:
+			invoice_value_details.total_other_charges += abs(t.base_tax_amount_after_discount_amount)
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	return invoice_value_details
 
 def get_payment_details(invoice):
@@ -326,11 +403,16 @@ def make_einvoice(invoice):
 	item_list = get_item_list(invoice)
 	doc_details = get_doc_details(invoice)
 	invoice_value_details = get_invoice_value_details(invoice)
+<<<<<<< HEAD
 	seller_details = get_party_details(invoice.company_address, company_address=1)
+=======
+	seller_details = get_party_details(invoice.company_address)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 
 	if invoice.gst_category == 'Overseas':
 		buyer_details = get_overseas_address_details(invoice.customer_address)
 	else:
+<<<<<<< HEAD
 		buyer_details = get_party_details(invoice.customer_address, billing_address=1)
 		place_of_supply = get_place_of_supply(invoice, invoice.doctype)
 		if place_of_supply:
@@ -340,11 +422,19 @@ def make_einvoice(invoice):
 
 		buyer_details.update(dict(place_of_supply=place_of_supply))
 	
+=======
+		buyer_details = get_party_details(invoice.customer_address)
+		place_of_supply = get_place_of_supply(invoice, invoice.doctype) or sanitize_for_json(invoice.billing_address_gstin)
+		place_of_supply = place_of_supply[:2]
+		buyer_details.update(dict(place_of_supply=place_of_supply))
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	shipping_details = payment_details = prev_doc_details = eway_bill_details = frappe._dict({})
 	if invoice.shipping_address_name and invoice.customer_address != invoice.shipping_address_name:
 		if invoice.gst_category == 'Overseas':
 			shipping_details = get_overseas_address_details(invoice.shipping_address_name)
 		else:
+<<<<<<< HEAD
 			shipping_details = get_party_details(invoice.shipping_address_name, shipping_address=1)
 
 	if invoice.is_return and invoice.return_against:
@@ -352,6 +442,19 @@ def make_einvoice(invoice):
 	if invoice.transporter and cint(invoice.distance):
 		eway_bill_details = get_eway_bill_details(invoice)
 	
+=======
+			shipping_details = get_party_details(invoice.shipping_address_name)
+
+	if invoice.is_pos and invoice.base_paid_amount:
+		payment_details = get_payment_details(invoice)
+
+	if invoice.is_return and invoice.return_against:
+		prev_doc_details = get_return_doc_reference(invoice)
+
+	if invoice.transporter:
+		eway_bill_details = get_eway_bill_details(invoice)
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	# not yet implemented
 	dispatch_details = period_details = export_details = frappe._dict({})
 
@@ -362,8 +465,13 @@ def make_einvoice(invoice):
 		period_details=period_details, prev_doc_details=prev_doc_details,
 		export_details=export_details, eway_bill_details=eway_bill_details
 	)
+<<<<<<< HEAD
 	einvoice = json.loads(einvoice)
 	
+=======
+	einvoice = safe_json_load(einvoice)
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	validations = json.loads(read_json('einv_validation'))
 	errors = validate_einvoice(validations, einvoice)
 	if errors:
@@ -373,6 +481,7 @@ def make_einvoice(invoice):
 			"Errors: ", json.dumps(errors, indent=4)
 		])
 		frappe.log_error(title="E Invoice Validation Failed", message=message)
+<<<<<<< HEAD
 		throw_error_list(errors, _('E Invoice Validation Failed'))
 
 	return einvoice
@@ -388,6 +497,25 @@ def validate_einvoice(validations, einvoice, errors=None):
 	if errors is None:
 		errors = []
 
+=======
+		frappe.throw(errors, title=_('E Invoice Validation Failed'), as_list=1)
+
+	return einvoice
+
+def safe_json_load(json_string):
+	JSONDecodeError = ValueError if six.PY2 else json.JSONDecodeError
+
+	try:
+		return json.loads(json_string)
+	except JSONDecodeError as e:
+		# print a snippet of 40 characters around the location where error occured
+		pos = e.pos
+		start, end = max(0, pos-20), min(len(json_string)-1, pos+20)
+		snippet = json_string[start:end]
+		frappe.throw(_("Error in input data. Please check for any special characters near following input: <br> {}").format(snippet))
+
+def validate_einvoice(validations, einvoice, errors=[]):
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	for fieldname, field_validation in validations.items():
 		value = einvoice.get(fieldname, None)
 		if not value or value == "None":
@@ -433,9 +561,15 @@ def validate_einvoice(validations, einvoice, errors=None):
 			errors.append(_('{} should not exceed {} characters').format(label, max_length))
 		if value_type == 'number' and (value > maximum or value < minimum):
 			errors.append(_('{} {} should be between {} and {}').format(label, value, minimum, maximum))
+<<<<<<< HEAD
 		if pattern_str and not pattern.match(value) and field_validation.get('validationMsg'):
 			errors.append(field_validation.get('validationMsg'))
 	
+=======
+		if pattern_str and not pattern.match(value):
+			errors.append(field_validation.get('validationMsg'))
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	return errors
 
 class RequestFailed(Exception): pass
@@ -464,6 +598,7 @@ class GSPConnector():
 			gstin = self.get_seller_gstin()
 			if not self.e_invoice_settings.enable:
 				frappe.throw(_("E-Invoicing is disabled. Please enable it from {} to generate e-invoices.").format(get_link_to_form("E Invoice Settings", "E Invoice Settings")))
+<<<<<<< HEAD
 
 			credentials_for_gstin = [d for d in self.e_invoice_settings.credentials if d.gstin == gstin]
 			if credentials_for_gstin:
@@ -486,6 +621,25 @@ class GSPConnector():
 		
 		return self.e_invoice_settings.auth_token
 	
+=======
+			credentials = next(d for d in self.e_invoice_settings.credentials if d.gstin == gstin)
+		else:
+			credentials = self.e_invoice_settings.credentials[0] if self.e_invoice_settings.credentials else None
+		return credentials
+
+	def get_seller_gstin(self):
+		gstin = self.invoice.company_gstin or frappe.db.get_value('Address', self.invoice.company_address, 'gstin')
+		if not gstin:
+			frappe.throw(_('Cannot retrieve Company GSTIN. Please select company address with valid GSTIN.'))
+		return gstin
+
+	def get_auth_token(self):
+		if time_diff_in_seconds(self.e_invoice_settings.token_expiry, now_datetime()) < 150.0:
+			self.fetch_auth_token()
+
+		return self.e_invoice_settings.auth_token
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def make_request(self, request_type, url, headers=None, data=None):
 		if request_type == 'post':
 			res = make_post_request(url, headers=headers, data=data)
@@ -494,7 +648,11 @@ class GSPConnector():
 
 		self.log_request(url, headers, data, res)
 		return res
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def log_request(self, url, headers, data, res):
 		headers.update({ 'password': self.credentials.password })
 		request_log = frappe.get_doc({
@@ -525,7 +683,11 @@ class GSPConnector():
 		except Exception:
 			self.log_error(res)
 			self.raise_error(True)
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def get_headers(self):
 		return {
 			'content-type': 'application/json',
@@ -547,14 +709,21 @@ class GSPConnector():
 			else:
 				self.log_error(res)
 				raise RequestFailed
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		except RequestFailed:
 			self.raise_error()
 
 		except Exception:
 			self.log_error()
 			self.raise_error(True)
+<<<<<<< HEAD
 	
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	@staticmethod
 	def get_gstin_details(gstin):
 		'''fetch and cache GSTIN details'''
@@ -592,7 +761,11 @@ class GSPConnector():
 
 			else:
 				raise RequestFailed
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		except RequestFailed:
 			errors = self.sanitize_error_message(res.get('message'))
 			self.raise_error(errors=errors)
@@ -600,7 +773,11 @@ class GSPConnector():
 		except Exception:
 			self.log_error(data)
 			self.raise_error(True)
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def get_irn_details(self, irn):
 		headers = self.get_headers()
 
@@ -611,7 +788,11 @@ class GSPConnector():
 				return res.get('result')
 			else:
 				raise RequestFailed
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		except RequestFailed:
 			errors = self.sanitize_error_message(res.get('message'))
 			self.raise_error(errors=errors)
@@ -619,7 +800,11 @@ class GSPConnector():
 		except Exception:
 			self.log_error()
 			self.raise_error(True)
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def cancel_irn(self, irn, reason, remark):
 		headers = self.get_headers()
 		data = json.dumps({
@@ -641,7 +826,11 @@ class GSPConnector():
 
 			else:
 				raise RequestFailed
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		except RequestFailed:
 			errors = self.sanitize_error_message(res.get('message'))
 			self.raise_error(errors=errors)
@@ -649,7 +838,10 @@ class GSPConnector():
 		except Exception:
 			self.log_error(data)
 			self.raise_error(True)
+<<<<<<< HEAD
 	
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def generate_eway_bill(self, **kwargs):
 		args = frappe._dict(kwargs)
 
@@ -690,7 +882,11 @@ class GSPConnector():
 		except Exception:
 			self.log_error(data)
 			self.raise_error(True)
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def cancel_eway_bill(self, eway_bill, reason, remark):
 		headers = self.get_headers()
 		data = json.dumps({
@@ -700,7 +896,10 @@ class GSPConnector():
 		}, indent=4)
 		headers["username"] = headers["user_name"]
 		del headers["user_name"]
+<<<<<<< HEAD
 
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		try:
 			res = self.make_request('post', self.cancel_ewaybill_url, headers, data)
 			if res.get('success'):
@@ -723,7 +922,11 @@ class GSPConnector():
 		except Exception:
 			self.log_error(data)
 			self.raise_error(True)
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def sanitize_error_message(self, message):
 		'''
 			On validation errors, response message looks something like this:
@@ -762,11 +965,19 @@ class GSPConnector():
 			"Exception:", err_tb
 		])
 		frappe.log_error(title=_('E Invoice Request Failed'), message=message)
+<<<<<<< HEAD
 	
 	def raise_error(self, raise_exception=False, errors=[]):
 		title = _('E Invoice Request Failed')
 		if errors:
 			throw_error_list(errors, title)
+=======
+
+	def raise_error(self, raise_exception=False, errors=[]):
+		title = _('E Invoice Request Failed')
+		if errors:
+			frappe.throw(errors, title=title, as_list=1)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 		else:
 			link_to_error_list = '<a href="desk#List/Error Log/List?method=E Invoice Request Failed">Error Log</a>'
 			frappe.msgprint(
@@ -775,7 +986,11 @@ class GSPConnector():
 				raise_exception=raise_exception,
 				indicator='red'
 			)
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def set_einvoice_data(self, res):
 		enc_signed_invoice = res.get('SignedInvoice')
 		dec_signed_invoice = jwt.decode(enc_signed_invoice, verify=False)['data']
@@ -793,7 +1008,10 @@ class GSPConnector():
 			'label': _('IRN Generated')
 		}
 		self.update_invoice()
+<<<<<<< HEAD
 
+=======
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def attach_qrcode_image(self):
 		qrcode = self.invoice.signed_qr_code
 		doctype = self.invoice.doctype
@@ -813,14 +1031,29 @@ class GSPConnector():
 			"content": qr_image.getvalue()})
 		_file.save()
 		frappe.db.commit()
+<<<<<<< HEAD
 
 		self.invoice.qrcode_image = _file.file_url
 	
+=======
+		self.invoice.qrcode_image = _file.file_url
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 	def update_invoice(self):
 		self.invoice.flags.ignore_validate_update_after_submit = True
 		self.invoice.flags.ignore_validate = True
 		self.invoice.save()
 
+<<<<<<< HEAD
+=======
+
+def sanitize_for_json(string):
+	"""Escape JSON specific characters from a string."""
+
+	# json.dumps adds double-quotes to the string. Indexing to remove them.
+	return json.dumps(string)[1:-1]
+
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
 @frappe.whitelist()
 def get_einvoice(doctype, docname):
 	invoice = frappe.get_doc(doctype, docname)
@@ -844,4 +1077,8 @@ def generate_eway_bill(doctype, docname, **kwargs):
 @frappe.whitelist()
 def cancel_eway_bill(doctype, docname, eway_bill, reason, remark):
 	gsp_connector = GSPConnector(doctype, docname)
+<<<<<<< HEAD
 	gsp_connector.cancel_eway_bill(eway_bill, reason, remark)
+=======
+	gsp_connector.cancel_eway_bill(eway_bill, reason, remark)
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a

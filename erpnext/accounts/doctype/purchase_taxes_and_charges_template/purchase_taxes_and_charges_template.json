@@ -78,7 +78,11 @@
  "modified_by": "Administrator",
  "module": "Accounts",
  "name": "Purchase Taxes and Charges Template",
+<<<<<<< HEAD
  "owner": "wasim@webnotestech.com",
+=======
+ "owner": "Administrator",
+>>>>>>> e0222723f05d730463d741de7a5ebff9e2081b3a
  "permissions": [
   {
    "email": 1,
